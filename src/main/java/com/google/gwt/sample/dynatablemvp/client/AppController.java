@@ -77,7 +77,7 @@ private PersonEditorWorkflowPresenter personEditor;
     History.newItem("add");
   }
   
-  private void doEditContact(String id) {
+  private void doEditContact(Integer id) {
     History.newItem("edit", false);
     Presenter presenter = new EditContactPresenter(requests, eventBus, new EditContactView(), id);
     presenter.go(container);

@@ -15,6 +15,12 @@
  */
 package com.google.gwt.sample.dynatablemvp.server.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Version;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -23,102 +29,94 @@ import javax.validation.constraints.Size;
 /**
  * Represents an address.
  */
+@Entity
 public class Address {
-  @NotNull
-  @Size(min = 1)
-  private String city;
+	@NotNull
+	@Size(min = 1)
+	private String city;
 
-  // May be null if Address is newly-created
-  private String id;
+	// May be null if Address is newly-created
+	private Integer id;
 
-  @NotNull
-  @Size(min = 1)
-  private String state;
+	@NotNull
+	@Size(min = 1)
+	private String state;
 
-  @NotNull
-  @Size(min = 1)
-  private String street;
+	@NotNull
+	@Size(min = 1)
+	private String street;
 
-  @NotNull
-  @DecimalMin("0")
-  private Integer version = 0;
+	@NotNull
+	@DecimalMin("0")
+	private Integer version = 0;
 
-  @NotNull
-  @Pattern(regexp = "\\d{5}(-\\d{4})?")
-  private String zip;
+	@NotNull
+	@Pattern(regexp = "\\d{5}(-\\d{4})?")
+	private String zip;
 
-  private String email;
-  
-  public Address() {
-  }
+	private String email;
 
-  private Address(Address copyFrom) {
-    copyFrom(copyFrom);
-  }
+	public Address() {
+	}
 
-  public void copyFrom(Address copyFrom) {
-    city = copyFrom.getCity();
-    id = copyFrom.getId();
-    state = copyFrom.getState();
-    street = copyFrom.getSreet();
-    version = copyFrom.getVersion();
-    zip = copyFrom.getZip();
-    email = copyFrom.getEmail();
-  }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(unique = true, nullable = false)
+	public Integer getId() {
+		return id;
+	}
 
-  private Integer getVersion() {
-	return version;
-}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-private String getSreet() {
-	return street;
-}
+	public String getCity() {
+		return city;
+	}
 
-private String getId() {
-	return id;
-}
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-public String getCity() {
-    return city;
-  }
+	public String getState() {
+		return state;
+	}
 
-  public String getState() {
-    return state;
-  }
+	public String getStreet() {
+		return street;
+	}
 
-  public String getStreet() {
-    return street;
-  }
+	public String getZip() {
+		return zip;
+	}
 
-  public String getZip() {
-    return zip;
-  }
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
 
-  public Address makeCopy() {
-    return new Address(this);
-  }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-  public void setCity(String city) {
-    this.city = city;
-  }
+	public void setStreet(String street) {
+		this.street = street;
+	}
 
-  public void setState(String state) {
-    this.state = state;
-  }
+	public String getEmail() {
+		return email;
+	}
 
-  public void setStreet(String street) {
-    this.street = street;
-  }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-  public void setZip(String zip) {
-    this.zip = zip;
-  }
+	@Version
+	public Integer getVersion() {
+		return version;
+	}
 
-public String getEmail() {
-	return email;
-}
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 
-public void setEmail(String email) {
-	this.email = email;
-}
 }

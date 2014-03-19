@@ -1,5 +1,6 @@
 package com.google.gwt.sample.dynatablemvp.client.presenter;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -17,8 +18,15 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.sample.dynatablemvp.client.event.CreatePersonEvent;
 import com.google.gwt.sample.dynatablemvp.client.event.EditPersonEvent;
 import com.google.gwt.sample.dynatablemvp.client.event.FilterChangeEvent;
+import com.google.gwt.sample.dynatablemvp.client.event.PersonProxyChangeEvent;
+import com.google.gwt.sample.dynatablemvp.shared.AddressProxy;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory;
+import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory.SchoolCalendarRequest;
 import com.google.gwt.sample.dynatablemvp.shared.PersonProxy;
+import com.google.gwt.sample.dynatablemvp.shared.PersonRelation;
+import com.google.gwt.sample.dynatablemvp.shared.ScheduleProxy;
+import com.google.gwt.sample.dynatablemvp.shared.TimeSlotProxy;
+import com.google.gwt.sample.dynatablemvp.shared.TimeTools;
 import com.google.gwt.sample.dynatablemvp.shared.WeekDayStorage;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,11 +35,9 @@ import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionModel;
-import com.google.web.bindery.requestfactory.shared.EntityProxyChange;
 import com.google.web.bindery.requestfactory.shared.EntityProxyId;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
-import com.google.web.bindery.requestfactory.shared.WriteOperation;
 
 public class SummaryPresenter implements Presenter {
 	private static final Logger logger = Logger.getLogger(SummaryPresenter.class.getName());
@@ -53,6 +59,10 @@ public class SummaryPresenter implements Presenter {
 		List<PersonProxy> getVisibleItems();
 
 		PersonProxy getSelectedObject();
+
+		void setSelectedItem(Integer selectedItem);
+		
+		void redrawLastSelectedLine() ;
 
 	}
 
@@ -101,13 +111,11 @@ public class SummaryPresenter implements Presenter {
 						fetch(start);
 					}
 				});
-		com.google.web.bindery.event.shared.EventBus eventBusRf = this.requests.getEventBus();
-		EntityProxyChange.registerForProxyType(eventBusRf, PersonProxy.class,
-				new EntityProxyChange.Handler<PersonProxy>() {
+		eventBus.addHandler(PersonProxyChangeEvent.TYPE,
+				new PersonProxyChangeEvent.Handler() {
 					@Override
-					public void onProxyChange(
-							EntityProxyChange<PersonProxy> event) {
-						SummaryPresenter.this.onPersonChanged(event);
+					public void onPersonChanged(PersonProxyChangeEvent e) {
+						SummaryPresenter.this.onPersonChanged(e);
 					}
 				});
 
@@ -150,8 +158,10 @@ public class SummaryPresenter implements Presenter {
 		logger.fine("fetch("+start+") executed");
 		final int pageSize = this.display.getPageSize();
 		final boolean rowCountExact = SummaryPresenter.this.display.getTable().isRowCountExact();
-		this.requests.schoolCalendarRequest()
-				.getPeople(start, pageSize, weekDayStorage.getWeekDayBits())
+		SchoolCalendarRequest schoolCalendarRequest = this.requests.schoolCalendarRequest();
+		schoolCalendarRequest.getPeople(Arrays.asList(PersonRelation.SHEDULE)
+				,start, pageSize, weekDayStorage.getWeekDayBits())
+				.with("classSchedule.timeSlots")
 				.fire(new Receiver<List<PersonProxy>>() {
 					@Override
 					public void onFailure(ServerFailure error) {
@@ -168,6 +178,7 @@ public class SummaryPresenter implements Presenter {
 
 					@Override
 					public void onSuccess(List<PersonProxy> response) {
+//						CHECKDATA(response);
 						if (lastFetch != start) {
 							return;
 						}
@@ -186,29 +197,47 @@ public class SummaryPresenter implements Presenter {
 								SummaryPresenter.this.display.getTable().setRowCount(rowCount,exact);
 						}
 					}
+					
+					@SuppressWarnings("unused")
+					private void CHECKDATA(List<PersonProxy> people) {
+						for(PersonProxy person: people){
+							String msg = "CHECKDATA: "+person.getName()+"("+person.getId()+")";
+							final PersonProxy mentor = person.getMentor();
+							if(mentor!=null)
+								msg+=" [mentor ("+mentor.getId()+"): "+mentor.getName()+"]";
+							final AddressProxy address = person.getAddress();
+							if(address!=null)
+								msg+=" [address: "+address.getStreet()+"]";
+							final ScheduleProxy classSchedule = person.getClassSchedule();
+							if(classSchedule!=null){
+								msg+=" [schedule: "+classSchedule.getKey()+" { ";
+								List<TimeSlotProxy> timeSlots = classSchedule.getTimeSlots();
+								if(timeSlots!=null)
+									for(TimeSlotProxy timeSlot : timeSlots){
+										final TimeTools timeTools = new TimeTools(timeSlot.getDayOfWeek(),timeSlot.getStartMinutes(),timeSlot.getEndMinutes());
+										msg += timeSlot.getId()+":"+timeTools.getDescription()+",";
+									}
+								else
+									msg+="timeslot is null";
+								msg+=" }]";
+							}
+							logger.fine(msg);
+						}
+					}
 				});
 	}
 
-	void onPersonChanged(EntityProxyChange<PersonProxy> event) {
-		if (WriteOperation.PERSIST.equals(event.getWriteOperation())) {
-			logger.fine("onPersonChanged: PERSIST lastFetch="+lastFetch+";");
-			// Re-fetch if we're already displaying the last page
-			if (this.display.getTable().isRowCountExact()) {
-				int rowCount=display.getTable().getRowCount();
-				int lastPageOffset=rowCount - display.getPageSize();
-				if(lastFetch<lastPageOffset)
-					display.getTable().setRowCount(rowCount,false);
-				fetch(lastFetch+1);
-			} 
-		}
-		if (WriteOperation.UPDATE.equals(event.getWriteOperation())) {
-			EntityProxyId<PersonProxy> personId = event.getProxyId();
+
+	protected void onPersonChanged(PersonProxyChangeEvent e) {
+		if(e.isMerged()){
 
 			// Is the changing record onscreen?
-			int displayOffset = offsetOf(personId);
+			int displayOffset = offsetOf(e.getEntityProxyId());
 			if (displayOffset != -1) {
 				// Record is onscreen and may differ from our data
-				requests.find(personId).fire(new Receiver<PersonProxy>() {
+				requests.schoolCalendarRequest().findPerson(e.getPersonId(), Collections.singletonList(PersonRelation.SHEDULE))
+				.with("classSchedule.timeSlots")
+				.fire(new Receiver<PersonProxy>(){
 					@Override
 					public void onSuccess(PersonProxy person) {
 						// Re-check offset in case of changes while waiting for
@@ -221,10 +250,24 @@ public class SummaryPresenter implements Presenter {
 											SummaryPresenter.this.display
 													.getPageStart() + offset,
 											Collections.singletonList(person));
+							SummaryPresenter.this.display.setSelectedItem(person.getId());
 						}
 					}
-				});
-			}
+					
+				});;
+						
+			}			
+		} else {
+			logger.fine("onPersonChanged: PERSIST lastFetch="+lastFetch+";");
+			// Re-fetch if we're already displaying the last page
+			if (this.display.getTable().isRowCountExact()) {
+				int rowCount=display.getTable().getRowCount();
+				int lastPageOffset=rowCount - display.getPageSize();
+				if(lastFetch<lastPageOffset)
+					display.getTable().setRowCount(rowCount,false);
+				fetch(lastFetch+1);
+			} 
+			
 		}
 	}
 
@@ -246,6 +289,7 @@ public class SummaryPresenter implements Presenter {
 			return;
 		}
 		eventBus.fireEvent(new EditPersonEvent(person));
+		SummaryPresenter.this.display.redrawLastSelectedLine();
 		SummaryPresenter.this.display.getSelectionModel().setSelected(
 				person, false);
 	}

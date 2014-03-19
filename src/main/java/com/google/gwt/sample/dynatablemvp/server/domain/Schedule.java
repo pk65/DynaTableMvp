@@ -15,82 +15,79 @@
  */
 package com.google.gwt.sample.dynatablemvp.server.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import com.google.gwt.sample.dynatablemvp.shared.WeekDayStorage;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.Version;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 /**
- * Holds the relevant data for a Schedule entity.
- * This entity does not follow the usual pattern of providing getId(), getVersion()
- * and findSchedule() methods for RequestFactory's use. 
- * {@link pegasus.bop.sprint.server.ScheduleLocator} handles
- * those responsibilities instead.
+ * Holds the relevant data for a Schedule entity. This entity does not follow
+ * the usual pattern of providing getId(), getVersion() and findSchedule()
+ * methods for RequestFactory's use.
+ * {@link ScheduleEntityLocator.bop.sprint.server.ScheduleLocator} handles those
+ * responsibilities instead.
  */
+@Entity
 public class Schedule {
 
-  private List<TimeSlot> timeSlots = new ArrayList<TimeSlot>();
-  
-  private Integer key;
-  
-  private Integer revision;
+	private List<TimeSlot> timeSlots;
 
-  public Schedule() {
-  }
+	private Integer key;
 
-  public void addTimeSlot(TimeSlot timeSlot) {
-    timeSlots.add(timeSlot);
-  }
+	@NotNull
+	@DecimalMin("0")
+	private Integer revision = 0;
 
-  public String getDescription(WeekDayStorage daysFilter) {
-    String s = null;
-    ArrayList<TimeSlot> sortedSlots = new ArrayList<TimeSlot>(timeSlots);
-    Collections.sort(sortedSlots);
-    for (TimeSlot timeSlot : sortedSlots) {
-    	if (daysFilter.isWeekDayChecked(timeSlot.getDayOfWeek())) {
-	        if (s == null) {
-	          s = timeSlot.getDescription();
-	        } else {
-	          s += ", " + timeSlot.getDescription();
-	        }
-    	}
-    }
+	private Byte daysFilter;
 
-    if (s != null) {
-      return s;
-    } else {
-      return "";
-    }
-  }
+	public Schedule() {
+	}
 
-  public Integer getKey() {
-    return key;
-  }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(unique = true, nullable = false)
+	public Integer getKey() {
+		return key;
+	}
 
-  public Integer getRevision() {
-    return revision;
-  }
+	public void setKey(Integer key) {
+		this.key = key;
+	}
 
-  public List<TimeSlot> getTimeSlots() {
-    return timeSlots;
-  }
+	@Version
+	public Integer getRevision() {
+		return revision;
+	}
 
-  public void setKey(Integer key) {
-    this.key = key;
-  }
+	public void setRevision(Integer revision) {
+		this.revision = revision;
+	}
 
-  public void setRevision(Integer revision) {
-    this.revision = revision;
-  }
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinColumn
+	public List<TimeSlot> getTimeSlots() {
+		return timeSlots;
+	}
 
-  public void setTimeSlots(List<TimeSlot> timeSlots) {
-    this.timeSlots = new ArrayList<TimeSlot>(timeSlots);
-  }
+	public void setTimeSlots(List<TimeSlot> timeSlots) {
+		this.timeSlots = timeSlots;
+	}
 
-  @Override
-  public String toString() {
-    return getDescription(null);
-  }
+	public Byte getDaysFilter() {
+		return daysFilter;
+	}
+
+	public void setDaysFilter(Byte daysFilter) {
+		this.daysFilter = daysFilter;
+	}
 
 }

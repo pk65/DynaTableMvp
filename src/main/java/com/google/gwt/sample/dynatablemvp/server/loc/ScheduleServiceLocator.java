@@ -13,9 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.sample.dynatablemvp.server;
+package com.google.gwt.sample.dynatablemvp.server.loc;
 
-import com.google.web.bindery.requestfactory.shared.ServiceLocator;
+import com.google.gwt.sample.dynatablemvp.server.svc.ScheduleService;
 
 /**
  * This class provides an example of implementing a ServiceLocator to allow
@@ -25,10 +25,6 @@ import com.google.web.bindery.requestfactory.shared.ServiceLocator;
  * There is a reference to this class in an {@literal @}Service annotation in
  * {@link com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory}
  */
-public class ScheduleServiceLocator implements ServiceLocator {
-
-  public Object getInstance(Class<?> clazz) {
-    return clazz.equals(ScheduleService.class) ? new ScheduleService() : null;
-  }
+public class ScheduleServiceLocator extends SpringServiceLocator<ScheduleService> {
 
 }

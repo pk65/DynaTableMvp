@@ -83,7 +83,7 @@ public class DynaTableMvpPresenter  implements Presenter {
 		        int selectedRow = display.getClickedRow(event);
 		        
 		        if (selectedRow >= 0) {
-		          String id = contactDetails.get(selectedRow).getId();
+		          Integer id = contactDetails.get(selectedRow).getId();
 		          eventBus.fireEvent(new EditContactEvent(id));
 		        }
 		      }

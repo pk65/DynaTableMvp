@@ -69,32 +69,9 @@ public class PersonEditorWorkflow implements PersonEditorWorkflowPresenter.Displ
   @UiField(provided = false)
   PersonEditor personEditor;
 
-//  private final Driver editorDriver;
-//  private final FavoritesManager manager;
-//  private PersonProxy person;
-//  private final DynaTableRequestFactory requestFactory;
-//	private final Driver editorDriver;
-
 	@UiConstructor
   public PersonEditorWorkflow() {
-//    this.requestFactory = requestFactory;
-//    this.manager = manager;
-//    this.person = person;
-//	    editorDriver = GWT.create(Driver.class);
-/*    TimeSlotListWidget timeSlotEditor = new TimeSlotListWidget();
-    ScheduleEditor scheduleEditor = new ScheduleEditor(timeSlotEditor);
-    MentorSelector mentorEditor = new MentorSelector();
-    personEditor = new PersonEditor(mentorEditor, scheduleEditor);*/
     Binder.BINDER.createAndBindUi(this);
-//    this.favorite.setVisible(false);
-/*    contents.addDomHandler(new KeyUpHandler() {
-        public void onKeyUp(KeyUpEvent event) {
-          if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
-            onCancel(null);
-          }
-        }
-      }, KeyUpEvent.getType());*/
-    
   }
 
   @UiHandler("cancel")

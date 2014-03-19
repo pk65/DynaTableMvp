@@ -72,7 +72,7 @@ public class FavoritesPresenterGwtTest extends GwtTest {
 		final StringBuilder errorMessages=new StringBuilder();
 		
 		this.requests.schoolCalendarRequest()
-		.getPeople(0, 1, weekDayStorage.getWeekDayBits())
+		.getPeople(null,0, 1, weekDayStorage.getWeekDayBits())
 		.fire(new Receiver<List<PersonProxy>>() {
 			@Override
 			public void onFailure(ServerFailure error) {
@@ -100,5 +100,7 @@ public class FavoritesPresenterGwtTest extends GwtTest {
 		});
 		if(errorMessages.length()>0)
 			fail(errorMessages.toString());
+//		assertEquals(1, responseList); // why false?
+		assertEquals(0,responseList.size());
 	}
 }

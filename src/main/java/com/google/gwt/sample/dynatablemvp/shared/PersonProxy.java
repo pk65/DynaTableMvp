@@ -17,51 +17,67 @@ package com.google.gwt.sample.dynatablemvp.shared;
 
 //import pegasus.bop.sprint.domain.Person;
 
-import com.google.gwt.sample.dynatablemvp.server.domain.Person;
 import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.EntityProxyId;
 import com.google.web.bindery.requestfactory.shared.ProxyFor;
+import com.google.gwt.sample.dynatablemvp.server.domain.Person;
+import com.google.gwt.sample.dynatablemvp.server.loc.PersonEntityLocator;
 
 /**
  * Person DTO.
  */
-@ProxyFor(Person.class)
+@ProxyFor(value = Person.class, locator = PersonEntityLocator.class)
 public interface PersonProxy extends EntityProxy {
-
-  String getId();
 	
-  AddressProxy getAddress();
+	Integer getId();
 
-  ScheduleProxy getClassSchedule();
-  
-  String getDescription();
+	EntityProxyId<PersonProxy> stableId();
 
-  PersonProxy getMentor();
+	String getFirstName();
 
-  String getName();
-
-  String getNote();
-
-  String getScheduleDescription();
-  
-  void setAddress(AddressProxy address);
-
-  void setClassSchedule(ScheduleProxy schedule);
-
-  void setDescription(String description);
-
-  void setMentor(PersonProxy mentor);
-
-  void setName(String name);
-
-  void setNote(String note);
-  
-  EntityProxyId<PersonProxy> stableId();
-
-  String getFirstName();
 	String getLastName();
+
 	String getDisplayName();
+
+	AddressProxy getAddress();
+
+	ScheduleProxy getClassSchedule();
+
+	String getDescription();
+
+	PersonProxy getMentor();
+
+	String getName();
+
+	String getNote();
+
+
+	Integer getVersion();
+
+	Byte getDaysFilter();
+
+	void setAddress(AddressProxy address);
+
+	void setClassSchedule(ScheduleProxy schedule);
+
+	void setDescription(String description);
+
+	void setMentor(PersonProxy personProxy);
+
+	void setName(String name);
+
+	void setNote(String note);
+
+	void setId(Integer id);
+
 	void setFirstName(String firstName);
+
 	void setLastName(String lastName);
+
 	void setDisplayName(String displayName);
+
+	void setDaysFilter(Byte daysFilter);
+
+	void setVersion(Integer version);
+
 }

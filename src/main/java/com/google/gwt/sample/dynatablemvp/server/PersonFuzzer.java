@@ -20,13 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.google.gwt.sample.dynatablemvp.server.domain.Address;
 import com.google.gwt.sample.dynatablemvp.server.domain.Person;
 import com.google.gwt.sample.dynatablemvp.server.domain.Schedule;
 
 /**
  * Utility class for creating random people.
  */
-class PersonFuzzer {
+public class PersonFuzzer {
 
   public static final int MAX_PEOPLE = 100;
 
@@ -65,7 +66,10 @@ class PersonFuzzer {
     Random rnd = new Random(3);
     for (long i = 0; i < MAX_PEOPLE; i++) {
       Person person = generateRandomPerson(rnd);
-      AddressFuzzer.fuzz(rnd, person.getAddress());
+      Address address = new Address();
+      AddressFuzzer.fuzz(rnd, address);
+      address.setEmail(person.getFirstName()+"."+person.getLastName()+"@"+address.getCity()+".com");
+      person.setAddress(address);
       toReturn.add(person);
     }
     return toReturn;
@@ -85,6 +89,8 @@ class PersonFuzzer {
     String firstName = pickRandomString(rnd, FIRST_NAMES);
     String lastName = pickRandomString(rnd, LAST_NAMES);
     prof.setName("Dr. " + firstName + " " + lastName);
+    prof.setFirstName(firstName);
+    prof.setLastName(lastName);
 
     String subject = pickRandomString(rnd, SUBJECTS);
     prof.setDescription("Professor of " + subject);
@@ -100,6 +106,8 @@ class PersonFuzzer {
     String firstName = pickRandomString(rnd, FIRST_NAMES);
     String lastName = pickRandomString(rnd, LAST_NAMES);
     student.setName(firstName + " " + lastName);
+    student.setFirstName(firstName);
+    student.setLastName(lastName);
 
     String subject = pickRandomString(rnd, SUBJECTS);
     student.setDescription("Majoring in " + subject);

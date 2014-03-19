@@ -15,57 +15,34 @@
  */
 package com.google.gwt.sample.dynatablemvp.server.domain;
 
-//import static com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory.SchoolCalendarRequest.ALL_DAYS;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Version;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.google.gwt.sample.dynatablemvp.server.SchoolCalendarService;
-import com.google.gwt.sample.dynatablemvp.shared.WeekDayStorage;
-
-//import pegasus.bop.sprint.server.SchoolCalendarService;
-
 /**
  * Hold relevant data for Person.
  */
+@Entity
 public class Person {
-	public void updatePerson(){
-		
-	}
-	
-	public static void persist(Person person){
-		
-	}
-
-	/**
-	 * New instances could be created on the client, but it's a better demo to
-	 * send back a Person with a bunch of dummy data.
-	 */
-	public static Person createPerson() {
-		return SchoolCalendarService.createPerson();
-	}
-
-	/**
-	 * The RequestFactory requires a static finder method for each proxied type.
-	 * Soon it should allow you to customize how instances are found.
-	 */
-	public static Person findPerson(String id) {
-		/*
-		 * TODO At the moment requestFactory requires a finder method per type
-		 * It should get more flexible soon.
-		 */
-		return SchoolCalendarService.findPerson(id);
-	}
 
 	@NotNull
-	private Address address = new Address();
+	private Address address;
 
 	@NotNull
-	private Schedule classSchedule = new Schedule();
+	private Schedule classSchedule;
 
 	@NotNull
-	private String description = "DESC";
+	private String description;
 
 	private Person mentor;
 
@@ -74,7 +51,7 @@ public class Person {
 	private String name;
 
 	// May be null if the person is newly-created
-	private String id;
+	private Integer id;
 
 	@NotNull
 	@DecimalMin("0")
@@ -82,14 +59,30 @@ public class Person {
 
 	private String note;
 
-//	private List<Boolean> daysFilters = ALL_DAYS;
-	private final WeekDayStorage daysFilters=new WeekDayStorage(WeekDayStorage.ALL_DAYS);
+	private Byte daysFilter;
 
 	private String firstName;
 	private String lastName;
 	private String displayName;
-//	private String emailAddress;
-	
+
+	/**
+	 * The RequestFactory requires a Long id property for each proxied type.
+	 * <p>
+	 * The requirement for some kind of id object with proper hash / equals
+	 * semantics is not going away, but it should become possible to use types
+	 * other than Long, and properties other than "id".
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(unique = true, nullable = false)
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -117,29 +110,14 @@ public class Person {
 	public Person() {
 	}
 
-	protected Person(Person copyFrom) {
-		copyFrom(copyFrom);
-	}
-
-	public void copyFrom(Person copyFrom) {
-		address.copyFrom(copyFrom.getAddress());
-		classSchedule = copyFrom.getClassSchedule();
-		description = copyFrom.getDescription();
-		name = copyFrom.getName();
-		mentor = copyFrom.getMentor();
-		id = copyFrom.getId();
-		version = copyFrom.getVersion();
-		note = copyFrom.getNote();		
-		firstName=copyFrom.getFirstName();
-		lastName=copyFrom.getLastName();
-		displayName=copyFrom.getDisplayName();
-		
-	}
-
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = true)
 	public Address getAddress() {
 		return address;
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = true)
 	public Schedule getClassSchedule() {
 		return classSchedule;
 	}
@@ -148,19 +126,13 @@ public class Person {
 		return description;
 	}
 
-	/**
-	 * The RequestFactory requires a Long id property for each proxied type.
-	 * <p>
-	 * The requirement for some kind of id object with proper hash / equals
-	 * semantics is not going away, but it should become possible to use types
-	 * other than Long, and properties other than "id".
-	 */
-	public String getId() {
-		return id;
-	}
-
+	@OneToOne(targetEntity = Person.class)
 	public Person getMentor() {
 		return mentor;
+	}
+
+	public void setMentor(Person mentor) {
+		this.mentor = mentor;
 	}
 
 	public String getName() {
@@ -171,28 +143,13 @@ public class Person {
 		return note;
 	}
 
-	public String getScheduleDescription() {
-		return getScheduleWithFilter(daysFilters);
-	}
-
-	public String getScheduleWithFilter(WeekDayStorage daysFilter) {
-		return classSchedule.getDescription(daysFilter);
-	}
-
 	/**
 	 * The RequestFactory requires an Integer version property for each proxied
 	 * type, but makes no good use of it. This requirement will be removed soon.
 	 */
+	@Version
 	public Integer getVersion() {
 		return version;
-	}
-
-	public Person makeCopy() {
-		return new Person(this);
-	}
-
-	public void persist() {
-		SchoolCalendarService.persist(this);
 	}
 
 	public void setAddress(Address address) {
@@ -203,21 +160,16 @@ public class Person {
 		this.classSchedule = schedule;
 	}
 
-	public void setDaysFilter(WeekDayStorage daysFilter) {
-//		assert daysFilter.size() == this.daysFilters.size();
-		this.daysFilters.setWeekDayBits(daysFilter.getWeekDayBits());
+	public Byte getDaysFilter() {
+		return daysFilter;
+	}
+
+	public void setDaysFilter(Byte daysFilter) {
+		this.daysFilter = daysFilter;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public void setMentor(Person mentor) {
-		this.mentor = mentor;
 	}
 
 	public void setName(String name) {
@@ -230,11 +182,5 @@ public class Person {
 
 	public void setVersion(Integer version) {
 		this.version = version;
-	}
-
-	@Override
-	public String toString() {
-		return "Person [description=" + description + ", id=" + id + ", name="
-				+ name + ", version=" + version + "]";
 	}
 }

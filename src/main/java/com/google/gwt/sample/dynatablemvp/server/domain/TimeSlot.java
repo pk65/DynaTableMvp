@@ -15,104 +15,80 @@
  */
 package com.google.gwt.sample.dynatablemvp.server.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Version;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+
 /**
  * Hold relevant data for a time slot.
  */
-public class TimeSlot implements Comparable<TimeSlot> {
+@Entity
+public class TimeSlot {
 
-  private static final transient String[] DAYS = new String[] {
-      "Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"};
+	private Integer id;
+	private int endMinutes;
 
-  private int endMinutes;
+	private int startMinutes;
 
-  private int startMinutes;
+	private int zeroBasedDayOfWeek;
 
-  private int zeroBasedDayOfWeek;
+	@NotNull
+	@DecimalMin("0")
+	private int version = 0;
 
-  public TimeSlot() {
-  }
+	public TimeSlot() {
+	}
 
-  public TimeSlot(int zeroBasedDayOfWeek, int startMinutes, int endMinutes) {
-    this.zeroBasedDayOfWeek = zeroBasedDayOfWeek;
-    this.startMinutes = startMinutes;
-    this.endMinutes = endMinutes;
-  }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(unique = true, nullable = false)
+	public Integer getId() {
+		return id;
+	}
 
-  public int compareTo(TimeSlot o) {
-    if (zeroBasedDayOfWeek < o.zeroBasedDayOfWeek) {
-      return -1;
-    } else if (zeroBasedDayOfWeek > o.zeroBasedDayOfWeek) {
-      return 1;
-    } else {
-      if (startMinutes < o.startMinutes) {
-        return -1;
-      } else if (startMinutes > o.startMinutes) {
-        return 1;
-      } else if (endMinutes < o.endMinutes) {
-        return -1;
-      } else if (endMinutes > o.endMinutes) {
-        return 1;
-      } 
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    return 0;
-  }
+	@NotNull
+	@DecimalMin("0")
+	@DecimalMax("6")
+	public int getDayOfWeek() {
+		return zeroBasedDayOfWeek;
+	}
 
-  @Override
-  public boolean equals(Object obj) {
-    if (!(obj instanceof TimeSlot)) {
-      return false;
-    }
-    return compareTo((TimeSlot) obj) == 0;
-  }
-  
-  public int getDayOfWeek() {
-    return zeroBasedDayOfWeek;
-  }
+	public void setDayOfWeek(int zeroBasedDayOfWeek) {
+		this.zeroBasedDayOfWeek = zeroBasedDayOfWeek;
+	}
 
-  public String getDescription() {
-    return DAYS[zeroBasedDayOfWeek] + " " + getHrsMins(startMinutes) + "-"
-        + getHrsMins(endMinutes);
-  }
+	public int getEndMinutes() {
+		return endMinutes;
+	}
 
-  public int getEndMinutes() {
-    return endMinutes;
-  }
+	public int getStartMinutes() {
+		return startMinutes;
+	}
 
-  public int getStartMinutes() {
-    return startMinutes;
-  }
+	public void setEndMinutes(int endMinutes) {
+		this.endMinutes = endMinutes;
+	}
 
-  @Override
-  public int hashCode() {
-    return endMinutes + 7 * startMinutes + 31 * zeroBasedDayOfWeek;
-  }
+	public void setStartMinutes(int startMinutes) {
+		this.startMinutes = startMinutes;
+	}
 
-  public void setDayOfWeek(int zeroBasedDayOfWeek) {
-    if (0 <= zeroBasedDayOfWeek && zeroBasedDayOfWeek < 7) {
-      this.zeroBasedDayOfWeek = zeroBasedDayOfWeek;
-    } else {
-      throw new IllegalArgumentException("day must be in the range 0-6");
-    }
-  }
+	@Version
+	public int getVersion() {
+		return version;
+	}
 
-  public void setEndMinutes(int endMinutes) {
-    this.endMinutes = endMinutes;
-  }
-
-  public void setStartMinutes(int startMinutes) {
-    this.startMinutes = startMinutes;
-  }
-
-  private String getHrsMins(int mins) {
-    int hrs = mins / 60;
-    if (hrs > 12) {
-      hrs -= 12;
-    }
-
-    int remainder = mins % 60;
-
-    return hrs + ":"
-        + (remainder < 10 ? "0" + remainder : String.valueOf(remainder));
-  }
+	public void setVersion(int version) {
+		this.version = version;
+	}
 }

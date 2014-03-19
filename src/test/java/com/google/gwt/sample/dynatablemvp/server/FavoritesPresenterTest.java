@@ -1,4 +1,4 @@
-package com.google.gwt.sample.dynatablemvp.client.presenter;
+package com.google.gwt.sample.dynatablemvp.server;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,6 +14,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window.ClosingHandler;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.requestfactory.shared.EntityProxyId;
 import com.google.gwt.sample.dynatablemvp.client.FavoritesManager;
 import com.google.gwt.sample.dynatablemvp.client.presenter.FavoritesPresenter;
 import com.google.gwt.sample.dynatablemvp.client.presenter.FavoritesPresenter.Display;
@@ -22,9 +25,6 @@ import com.google.gwt.sample.dynatablemvp.shared.AddressProxy;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory;
 import com.google.gwt.sample.dynatablemvp.shared.PersonProxy;
 import com.google.gwt.sample.dynatablemvp.shared.ScheduleProxy;
-import com.google.gwt.user.client.Window.ClosingHandler;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.shared.EntityProxyId;
 
 public class FavoritesPresenterTest {
 	private FavoritesPresenter favorites = null;
@@ -39,9 +39,9 @@ public class FavoritesPresenterTest {
 
 	@Test
 	public void testAddPersonToList() {
-		PersonProxy firstPerson = new PersonBody("Z First Person");
-		PersonProxy secondPerson =  new PersonBody("K Second Person");
-		PersonProxy thirdPerson = new PersonBody("A third Person");
+		PersonProxy firstPerson = new PersonBody("Z First Person",null);
+		PersonProxy secondPerson =  new PersonBody("K Second Person",null);
+		PersonProxy thirdPerson = new PersonBody("A third Person",null);
 		favorites.addPersonToList(firstPerson);
 		favorites.addPersonToList(secondPerson);
 		favorites.addPersonToList(thirdPerson);
@@ -56,17 +56,22 @@ public class FavoritesPresenterTest {
 	}
 
 	private class PersonBody implements PersonProxy {
-		private final String name;
+		private  String name;
+		private  Integer id;
+		private Byte daysFilter;
+		private Integer version;
+		
 		private final PersonId personid;
 		
-		public PersonBody(String name){
+		public PersonBody(String name,Integer id){
 			this.name=name;
+			this.id=id;
 			this.personid=new PersonId(this);
 		}
 		
 		@Override
-		public String getId() {
-			return name;
+		public Integer getId() {
+			return id;
 		}
 
 		@Override
@@ -100,11 +105,6 @@ public class FavoritesPresenterTest {
 		}
 
 		@Override
-		public String getScheduleDescription() {
-			return null;
-		}
-
-		@Override
 		public void setAddress(AddressProxy address) {
 		}
 
@@ -114,14 +114,6 @@ public class FavoritesPresenterTest {
 
 		@Override
 		public void setDescription(String description) {
-		}
-
-		@Override
-		public void setMentor(PersonProxy mentor) {
-		}
-
-		@Override
-		public void setName(String name) {
 		}
 
 		@Override
@@ -159,7 +151,42 @@ public class FavoritesPresenterTest {
 		@Override
 		public void setDisplayName(String displayName) {
 		}
-		
+
+		@Override
+		public Integer getVersion() {
+			return this.version;
+		}
+
+		@Override
+		public Byte getDaysFilter() {
+			return this.daysFilter;
+		}
+
+
+		@Override
+		public void setDaysFilter(Byte daysFilter) {
+			this.daysFilter=daysFilter;
+		}
+
+		@Override
+		public void setVersion(Integer version) {
+			this.version=version;
+		}
+
+		@Override
+		public void setName(String name) {
+			this.name=name;
+		}
+
+		@Override
+		public void setId(Integer id) {
+			this.id=id;
+		}
+
+		@Override
+		public void setMentor(PersonProxy mentor) {
+			
+		}
 	}
 	
 	private NameElement getNewElement() {

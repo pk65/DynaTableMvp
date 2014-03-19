@@ -5,6 +5,8 @@ package com.google.gwt.sample.dynatablemvp.client.presenter;
 //import pegasus.bop.sprint.shared.DynaTableRequestFactory;
 //import pegasus.bop.sprint.shared.PersonProxy;
 
+import java.util.Arrays;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -13,6 +15,7 @@ import com.google.gwt.sample.dynatablemvp.client.event.ContactUpdatedEvent;
 import com.google.gwt.sample.dynatablemvp.client.event.EditContactCancelledEvent;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory;
 import com.google.gwt.sample.dynatablemvp.shared.PersonProxy;
+import com.google.gwt.sample.dynatablemvp.shared.PersonRelation;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -50,7 +53,7 @@ public class EditContactPresenter implements Presenter {
 	}
 
 	public EditContactPresenter(DynaTableRequestFactory rpcService,
-			HandlerManager eventBus, Display display, String id) {
+			HandlerManager eventBus, Display display, Integer id) {
 		this.requests = rpcService;
 		this.eventBus = eventBus;
 		this.display = display;
@@ -58,7 +61,7 @@ public class EditContactPresenter implements Presenter {
 
 //		Request<PersonProxy> person = rpcService.schoolCalendarRequest().findPerson(id);
 		
-		rpcService.schoolCalendarRequest().findPerson(id)
+		rpcService.schoolCalendarRequest().findPerson(id,Arrays.asList(PersonRelation.ADDRESS,PersonRelation.SHEDULE,PersonRelation.MENTOR))
 				.fire(new Receiver<PersonProxy>() {
 					@Override
 					public void onFailure(ServerFailure error) {
@@ -108,7 +111,7 @@ public class EditContactPresenter implements Presenter {
 		contact.setFirstName(display.getFirstName().getValue());
 		contact.setLastName(display.getLastName().getValue());
 		contact.getAddress().setEmail(display.getEmailAddress().getValue());
-		requests.personRequest().persist().using(contact).fire(new Receiver<Void>() {
+		requests.personRequest().persist(contact).fire(new Receiver<Integer>(){
 
 			@Override
 			public void onFailure(ServerFailure error) {
@@ -118,7 +121,7 @@ public class EditContactPresenter implements Presenter {
 			}
 
 			@Override
-			public void onSuccess(Void response) {
+			public void onSuccess(Integer response) {
 				eventBus.fireEvent(new ContactUpdatedEvent(contact));
 			}
 		});

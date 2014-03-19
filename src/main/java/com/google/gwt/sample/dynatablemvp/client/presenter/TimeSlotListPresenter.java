@@ -5,14 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-//import com.google.gwt.sample.dynatablemvp.client.widgets.TimeSlotKey;
-//import com.google.gwt.sample.dynatablemvp.client.widgets.TimeSlotListWidget.WeekDay;
-//import com.google.gwt.sample.dynatablemvp.client.widgets.ScheduleRequest;
-//import com.google.gwt.sample.dynatablemvp.client.widgets.TimeSlotListWidget;
-//import com.google.gwt.sample.dynatablemvp.client.widgets.TimeSlotListWidget.ScheduleRow;
-//import com.google.gwt.sample.dynatablemvp.client.widgets.TimeSlotListWidget.TimeSlotKey;
-//import com.google.gwt.sample.dynatablemvp.client.widgets.TimeSlotListWidget.WeekDay;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory;
 import com.google.gwt.sample.dynatablemvp.shared.TimeSlotProxy;
@@ -52,6 +44,8 @@ public class TimeSlotListPresenter implements Presenter {
 			final TimeSlotKey key = new TimeSlotKey(day, hour);
 			if (currentSchedule.contains(key)) {
 				currentSchedule.remove(key);
+				TimeSlotProxy removedSlot = existingSlots.remove(key);
+				backing.remove(removedSlot);
 				view.redrawTable();
 			} else if (!existingSlots.containsKey(key)) {
 				view.setAcceptClicks(false);

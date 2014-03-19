@@ -15,19 +15,33 @@
  */
 package com.google.gwt.sample.dynatablemvp.shared;
 
-import com.google.gwt.sample.dynatablemvp.server.ScheduleLocator;
-import com.google.gwt.sample.dynatablemvp.server.domain.Schedule;
 import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyFor;
+import com.google.gwt.sample.dynatablemvp.server.domain.Schedule;
+import com.google.gwt.sample.dynatablemvp.server.loc.ScheduleEntityLocator;
 
 import java.util.List;
-
 
 /**
  * Schedule DTO.
  */
-@ProxyFor(value = Schedule.class, locator = ScheduleLocator.class)
+@ProxyFor(value = Schedule.class, locator = ScheduleEntityLocator.class)
 public interface ScheduleProxy extends EntityProxy {
-  List<TimeSlotProxy> getTimeSlots();
-  void setTimeSlots(List<TimeSlotProxy> slots);
+
+	Integer getKey();
+
+	void setKey(Integer key);
+
+	Integer getRevision();
+
+	void setRevision(Integer revision);
+
+	List<TimeSlotProxy> getTimeSlots();
+
+	void setTimeSlots(List<TimeSlotProxy> slots);
+
+	Byte getDaysFilter() ;
+	
+//	String getDescription();
+
 }

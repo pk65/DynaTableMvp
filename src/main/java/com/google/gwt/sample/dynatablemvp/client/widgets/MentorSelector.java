@@ -34,8 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
  * This type delegates editing control to an instance of the
  * {@link OptionalValueEditor} adapter class.
  */
-public class MentorSelector extends Composite implements MentorSelectorPresenter.Display, HasText,HasVisibility
-   /* , IsEditor<OptionalFieldEditor<PersonProxy, NameLabel>>*/ {
+public class MentorSelector extends Composite implements MentorSelectorPresenter.Display, HasText,HasVisibility {
 
   interface Binder extends UiBinder<Widget, MentorSelector> {
   }
@@ -49,19 +48,11 @@ public class MentorSelector extends Composite implements MentorSelectorPresenter
   @UiField
   Label nameLabel;
 
-//  private final OptionalFieldEditor<PersonProxy, NameLabel> editor;
-//  private final DynaTableRequestFactory factory;
 
   @UiConstructor
-  public MentorSelector(/*DynaTableRequestFactory factory*/) {
-//    this.factory = factory;
+  public MentorSelector() {
     initWidget(GWT.<Binder> create(Binder.class).createAndBindUi(this));
-//    editor = OptionalFieldEditor.of(nameLabel);
   }
-
-//  public OptionalFieldEditor<PersonProxy, NameLabel> asEditor() {
-//    return editor;
-//  }
 
   @Override
   public void setEnabled(boolean enabled) {
@@ -71,27 +62,8 @@ public class MentorSelector extends Composite implements MentorSelectorPresenter
 
   @Override
   protected void onUnload() {
-//    nameLabel.cancelSubscription();
   }
 
-/*  @UiHandler("choose")
-  void onChoose(ClickEvent event) {
-
-  }
-
-  @UiHandler("clear")
-  void onClear(ClickEvent event) {
-//    setValue(null);
-  }
-*/
-  /**
-   * This method is not called by the Editor framework.
-   */
-/*  private void setValue(PersonProxy person) {
-//    editor.setValue(person);
-    nameLabel.setVisible(person != null);
-  }
-*/
 	@Override
 	public HasClickHandlers getChoose() {
 		return choose;

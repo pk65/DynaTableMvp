@@ -1,6 +1,8 @@
 package com.google.gwt.sample.dynatablemvp.shared;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WeekDayStorage implements Serializable {
 	/**
@@ -51,5 +53,20 @@ public class WeekDayStorage implements Serializable {
 	
 	public void setAllDaysChecked(){
 		this.weekDayBits = ALL_DAYS;
+	}
+	
+	public List<Integer> getArrayOfDays(){
+		final ArrayList<Integer> result = new ArrayList<Integer>();
+		for(int i=0;i<7;i++)
+			if(isWeekDayChecked(i))
+			result.add(new Integer(i));
+		return result;
+	}
+	
+	public void setArrayOfDays(List<Integer> arrayOfDays){
+		setWeekDayBits((byte)0);
+		if(arrayOfDays!=null)
+			for(Integer d : arrayOfDays)
+				setWeekDayValue(d.intValue(),true);
 	}
 }

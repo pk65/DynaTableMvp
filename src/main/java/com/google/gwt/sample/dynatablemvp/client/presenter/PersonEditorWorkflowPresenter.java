@@ -1,5 +1,6 @@
 package com.google.gwt.sample.dynatablemvp.client.presenter;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -20,15 +21,15 @@ import com.google.gwt.sample.dynatablemvp.client.FavoritesManager;
 import com.google.gwt.sample.dynatablemvp.client.event.CreatePersonEvent;
 import com.google.gwt.sample.dynatablemvp.client.event.EditPersonEvent;
 import com.google.gwt.sample.dynatablemvp.client.event.MarkFavoriteEvent;
+import com.google.gwt.sample.dynatablemvp.client.event.PersonProxyChangeEvent;
 import com.google.gwt.sample.dynatablemvp.shared.DiagTools;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory;
+import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory.SchoolCalendarRequest;
 import com.google.gwt.sample.dynatablemvp.shared.PersonProxy;
-import com.google.gwt.sample.dynatablemvp.shared.TimeSlotProxy;
-import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory.PersonRequest;
+import com.google.gwt.sample.dynatablemvp.shared.PersonRelation;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.shared.EntityProxyId;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
@@ -56,7 +57,6 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 	@Override
 	public void go(HasWidgets container) {
 		personEditor.go(container);
-//		favorites.go(container);
 		bind();
 	}
 
@@ -77,7 +77,7 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 				new EditPersonEvent.Handler() {
 					public void startEdit(PersonProxy person) {
 						view.setFavorite(favoritesManager.isFavorite(person));
-						fetchAndEdit(person.stableId());
+						fetchAndEdit(person.getId());
 					}
 				});
 		view.getContentsWidget().addDomHandler(new KeyUpHandler() {
@@ -110,12 +110,10 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 
 
 
-//	private final FavoritesManager manager;
 	private final DynaTableRequestFactory requestFactory;
 	private final HandlerManager eventBus;
 	private final Display view;
 	private final PersonEditorPresenter personEditor;
-//	private final FavoritesPresenter favorites;
 	private final FavoritesManager favoritesManager;
 	
 	public PersonEditorWorkflowPresenter(
@@ -129,12 +127,10 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 		personEditor=new PersonEditorPresenter(requestFactory, eventBus,this.view.getPersonEditor());
 	}
 
-
-	private void fetchAndEdit(EntityProxyId<PersonProxy> entityProxyId) {
-		// The request is configured arbitrarily
-		final PersonRequest fetchRequest=requestFactory.personRequest();
-		// We could do more with the request, but we just fire it
-		fetchRequest.find(entityProxyId).with("address","classSchedule.timeSlots","mentor").fire(new Receiver<PersonProxy>() {
+	private void fetchAndEdit(Integer id) {
+		final SchoolCalendarRequest fetchRequest=requestFactory.schoolCalendarRequest();
+		fetchRequest.findPerson(id,Arrays.asList(PersonRelation.ADDRESS,PersonRelation.SHEDULE,PersonRelation.MENTOR))
+			.with("address","classSchedule.timeSlots","mentor").fire(new Receiver<PersonProxy>() {
 			@Override
 			public void onFailure(ServerFailure error) {
 				logger.severe(error.getMessage());
@@ -163,21 +159,15 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 	 * errors, and send the request to the server.
 	 */
 	void onSave(ClickEvent event) {
-		// Flush the contents of the UI
-		StringBuilder msgBuffer = new StringBuilder();
 		final PersonProxy personToSave = personEditor.getValue();
-		for(TimeSlotProxy timeSlot : personToSave.getClassSchedule().getTimeSlots()){
-			if(msgBuffer.length()>0)
-				msgBuffer.append(", ");
-			msgBuffer.append("\"");
-			msgBuffer.append(DiagTools.getDescription(timeSlot.getDayOfWeek(), timeSlot.getStartMinutes(), timeSlot.getEndMinutes()));
-			msgBuffer.append("\"");
-		}
-		logger.fine("timeSlots= {"+msgBuffer.toString()+"}");
-		personEditor.getContext().persist().using(personToSave).fire(new Receiver<Void> () {
+		personEditor.getContext().persist(personToSave
+				,personToSave.getAddress()
+				,personToSave.getClassSchedule()
+				,personToSave.getMentor())
+		.fire(new Receiver<Integer> () {
 			@Override
 			public void onFailure(ServerFailure error) {
-				view.getDialogText().setText("Error detected on the server: "+error.getMessage());
+				view.getDialogText().setText(error.getMessage()+"\n"+error.getStackTraceString()+"\n");
 			}
 			@Override
 			public void onConstraintViolation(Set<ConstraintViolation<?>> errors) {
@@ -186,9 +176,11 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 				view.getDialogText().setText(text);
 			}
 			@Override
-			public void onSuccess(Void response) {
-				view.setDialogVisible(false);	
-			}});
+			public void onSuccess(Integer response) {
+				view.setDialogVisible(false);
+				eventBus.fireEvent(new PersonProxyChangeEvent(response,(personToSave.getId()!=null),personToSave.stableId()));
+			}
+		});
 	}
 
 }

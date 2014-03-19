@@ -13,10 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.sample.dynatablemvp.server;
+package com.google.gwt.sample.dynatablemvp.server.loc;
 
+import com.google.gwt.sample.dynatablemvp.server.dao.ScheduleDao;
 import com.google.gwt.sample.dynatablemvp.server.domain.Schedule;
-import com.google.web.bindery.requestfactory.shared.Locator;
 
 /**
  * This class serves as an example of implementing a Locator to allow
@@ -28,43 +28,6 @@ import com.google.web.bindery.requestfactory.shared.Locator;
  * There is a reference to this class in a {@literal @}Service annotation in
  * {@link pegasus.bop.sprint.shared.DynaTableRequestFactory}
  */
-public class ScheduleLocator extends Locator<Schedule, String> {
-  
-  public static ScheduleSource getThreadLocalObject() {
-    return SchoolCalendarService.SCHEDULE_SOURCE.get();
-  }
-
-  @Override
-  public Schedule create(Class<? extends Schedule> clazz) {
-    return getThreadLocalObject().create(clazz);
-  }
-
-  @Override
-  public Schedule find(Class<? extends Schedule> clazz, String id) {
-    return getThreadLocalObject().find(clazz, id);
-  }
-
-  @Override
-  public Class<Schedule> getDomainType() {
-    return getThreadLocalObject().getDomainType();
-  }
-
-  @Override
-  public String getId(Schedule domainObject) {
-    return getThreadLocalObject().getId(domainObject);
-  }
-
-  @Override
-  public Class<String> getIdType() {
-    return getThreadLocalObject().getIdType();
-  }
-
-  @Override
-  public Object getVersion(Schedule domainObject) {
-    return getThreadLocalObject().getVersion(domainObject);
-  }
-
-  public void persist(Schedule domainObject) {
-    getThreadLocalObject().persist(domainObject);
-  }
+public class ScheduleEntityLocator extends ProxyObjectLocator<Schedule, Integer,ScheduleDao> {
+ 
 }

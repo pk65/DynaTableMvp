@@ -13,20 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.sample.dynatablemvp.server;
+package com.google.gwt.sample.dynatablemvp.server.loc;
 
-import com.google.gwt.sample.dynatablemvp.server.domain.TimeSlot;
-
+import com.google.gwt.sample.dynatablemvp.server.svc.AddressService;
 
 /**
- * Service object for Schedule entities, used to demonstrate the use of non-static
- * service objects with RequestFactory. RequestFactory finds this service via the
- * {@link ScheduleServiceLocator}.
+ * This class provides an example of implementing a ServiceLocator to allow
+ * RequestFactory to work with instances of service objects, instead of its default
+ * behavior of mapping service calls to static methods.
+ * <p>
+ * There is a reference to this class in an {@literal @}Service annotation in
+ * {@link com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory}
  */
-public class ScheduleService {
+public class AddressServiceLocator extends SpringServiceLocator<AddressService> {
 
-  public TimeSlot createTimeSlot(int zeroBasedDayOfWeek, int startMinutes, int endMinutes) {
-    return new TimeSlot(zeroBasedDayOfWeek, startMinutes, endMinutes);
-  }
-  
 }

@@ -1,7 +1,5 @@
 package com.google.gwt.sample.dynatablemvp.client.view;
 
-//import pegasus.bop.sprint.client.presenter.EditContactPresenter;
-
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.sample.dynatablemvp.client.presenter.EditContactPresenter;
 import com.google.gwt.user.client.ui.Button;

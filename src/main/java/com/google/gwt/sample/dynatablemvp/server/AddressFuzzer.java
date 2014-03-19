@@ -56,5 +56,6 @@ class AddressFuzzer {
       zip.append(String.format("-%04d", r.nextInt(9999)));
     }
     a.setZip(zip.toString());
+    a.setVersion(0);
   }
 }

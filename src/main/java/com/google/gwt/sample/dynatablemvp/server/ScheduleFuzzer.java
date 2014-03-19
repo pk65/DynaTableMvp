@@ -17,6 +17,7 @@ package com.google.gwt.sample.dynatablemvp.server;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -44,9 +45,8 @@ public class ScheduleFuzzer {
     ArrayList<TimeSlot> timeSlots = generateTimeSlots(rnd, howMany);
 
     Schedule sched = new Schedule();
-    for (TimeSlot timeSlot : timeSlots) {
-      sched.addTimeSlot(timeSlot);
-    }
+    sched.setRevision(0);
+    sched.setTimeSlots(timeSlots);
     return sched;
   }
 
@@ -61,7 +61,23 @@ public class ScheduleFuzzer {
   }
 
   private static ArrayList<TimeSlot> generateTimeSlots(Random rnd, int howMany) {
-    TreeSet<TimeSlot> timeSlots = new TreeSet<TimeSlot>();
+    TreeSet<TimeSlot> timeSlots = new TreeSet<TimeSlot>(new Comparator<TimeSlot>(){
+		@Override
+		public int compare(TimeSlot o1, TimeSlot o2) {
+			if(o1.getDayOfWeek()>o2.getDayOfWeek())
+				return 1;
+			if(o1.getDayOfWeek()<o2.getDayOfWeek())
+				return -1;
+			if(o1.getStartMinutes()>o2.getStartMinutes())
+				return 1;
+			if(o1.getStartMinutes()<o2.getStartMinutes())
+				return -1;
+			if(o1.getEndMinutes()>o2.getEndMinutes())
+				return 1;
+			if(o1.getEndMinutes()<o2.getEndMinutes())
+				return -1;
+			return 0;
+		}});
 
     for (int i = 0; i < howMany; ++i) {
       int startHrs = 8 + rnd.nextInt(9); // 8 am - 5 pm
@@ -70,7 +86,12 @@ public class ScheduleFuzzer {
       int absStartMins = 60 * startHrs; // convert to minutes
       int absStopMins = absStartMins + CLASS_LENGTH_MINS;
 
-      timeSlots.add(new TimeSlot(dayOfWeek, absStartMins, absStopMins));
+      TimeSlot timeSlot = new TimeSlot();
+      timeSlot.setDayOfWeek(dayOfWeek);
+      timeSlot.setStartMinutes(absStartMins);
+      timeSlot.setEndMinutes(absStopMins);
+      timeSlot.setVersion(0);
+      timeSlots.add(timeSlot);
     }
     
     return new ArrayList<TimeSlot>(timeSlots);

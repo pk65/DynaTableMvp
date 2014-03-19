@@ -17,63 +17,68 @@ package com.google.gwt.sample.dynatablemvp.shared;
 
 import java.util.List;
 
-import com.google.gwt.sample.dynatablemvp.server.ScheduleService;
-import com.google.gwt.sample.dynatablemvp.server.ScheduleServiceLocator;
-import com.google.gwt.sample.dynatablemvp.server.SchoolCalendarService;
-import com.google.gwt.sample.dynatablemvp.server.domain.Person;
 import com.google.web.bindery.requestfactory.shared.Request;
-import com.google.web.bindery.requestfactory.shared.InstanceRequest;
 import com.google.web.bindery.requestfactory.shared.LoggingRequest;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.RequestFactory;
 import com.google.web.bindery.requestfactory.shared.Service;
-
+import com.google.gwt.sample.dynatablemvp.server.loc.AddressServiceLocator;
+import com.google.gwt.sample.dynatablemvp.server.loc.PersonServiceLocator;
+import com.google.gwt.sample.dynatablemvp.server.loc.ScheduleServiceLocator;
+import com.google.gwt.sample.dynatablemvp.server.loc.SchoolCalendarServiceLocator;
+import com.google.gwt.sample.dynatablemvp.server.svc.ScheduleService;
+import com.google.gwt.sample.dynatablemvp.server.svc.AddressService;
+import com.google.gwt.sample.dynatablemvp.server.svc.PersonService;
+import com.google.gwt.sample.dynatablemvp.server.svc.SchoolCalendarService;
 
 /**
  * Request factory for the DynaTable sample. Instantiate via
  * {@link com.google.gwt.core.client.GWT#create}.
  */
-public interface DynaTableRequestFactory extends RequestFactory {
+public interface DynaTableRequestFactory extends RequestFactory {  
 	  /**
 	   * Source of request objects for the Person class.
 	   */
-	  @Service(Person.class)
+	  @Service(value=PersonService.class,locator=PersonServiceLocator.class)
 	  interface PersonRequest extends RequestContext {
-	    InstanceRequest<PersonProxy, Void> persist();
+		  Request<Integer> persist(PersonProxy person);
+		  Request<Integer> persist(PersonProxy person,AddressProxy address,ScheduleProxy schedule,PersonProxy mentor);
 	  }
 
-	  /**
-	   * Source of request objects for the SchoolCalendarService.
-	   */
-	  @Service(SchoolCalendarService.class)
-	  interface SchoolCalendarRequest extends RequestContext {
-/*	    List<Boolean> ALL_DAYS = Collections.unmodifiableList(Arrays.asList(true,
-	        true, true, true, true, true, true));
-	    List<Boolean> NO_DAYS = Collections.unmodifiableList(Arrays.asList(false,
-	        false, false, false, false, false, false));*/
-
-	    Request<List<PersonProxy>> getPeople(int startIndex, int maxCount,byte dayFilter);
-	    
-	    Request<PersonProxy> findPerson(String id);
-
-	    Request<PersonProxy> getRandomPerson();
+	  @Service(value=AddressService.class,locator=AddressServiceLocator.class)
+	  interface AddressRequest extends RequestContext {
+		  Request<Integer> persist(AddressProxy address);
 	  }
-
+	  
 	  /**
 	   * Source of request objects for Schedule entities.
 	   */
 	  @Service(value = ScheduleService.class, locator = ScheduleServiceLocator.class)
 	  interface ScheduleRequest extends RequestContext {
-	    Request<TimeSlotProxy> createTimeSlot(int zeroBasedDayOfWeek, int startMinutes,
-	        int endMinutes);
+		  Request<TimeSlotProxy> createTimeSlot(int zeroBasedDayOfWeek, int startMinutes, int endMinutes);
+		  Request<Integer> persist(ScheduleProxy schedule);
+	  }
+
+	  
+	  /**
+	   * Source of request objects for the SchoolCalendarFilter.
+	   */
+	  @Service(value=SchoolCalendarService.class, locator=SchoolCalendarServiceLocator.class)
+	  interface SchoolCalendarRequest extends RequestContext {
+
+	    Request<List<PersonProxy>> getAllPeople();
+	    Request<List<PersonProxy>> getPeople(List<PersonRelation> personRelations,Integer startIndex, Integer maxCount,Byte dayFilter);
+	    
+	    Request<PersonProxy> findPerson(Integer id,List<PersonRelation> personRelations);
+
+	    Request<PersonProxy> getRandomPerson();
 	  }
 
 	  LoggingRequest loggingRequest();
 
 	  PersonRequest personRequest();
-	  
+	  AddressRequest addressRequest();
 	  ScheduleRequest scheduleRequest();
-
 	  SchoolCalendarRequest schoolCalendarRequest();
 
 }

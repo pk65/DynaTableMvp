@@ -6,7 +6,13 @@
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
-
+<listener>
+ <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/applicationContext-hibernate.xml</param-value>
+</context-param>
   <servlet>
     <servlet-name>requestFactoryServlet</servlet-name>
     <servlet-class>com.google.web.bindery.requestfactory.server.RequestFactoryServlet</servlet-class>
@@ -22,13 +28,4 @@
     <servlet-name>requestFactoryServlet</servlet-name>
     <url-pattern>/gwtRequest</url-pattern>
   </servlet-mapping>
-  <filter>
-    <filter-name>TransactionContext</filter-name>
-    <filter-class>com.google.gwt.sample.dynatablemvp.server.SchoolCalendarService</filter-class>
-  </filter>
-
-  <filter-mapping>
-    <filter-name>TransactionContext</filter-name>
-    <url-pattern>/gwtRequest</url-pattern>
-  </filter-mapping>
 </web-app>

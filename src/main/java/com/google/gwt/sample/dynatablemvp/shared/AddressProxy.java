@@ -15,33 +15,41 @@
  */
 package com.google.gwt.sample.dynatablemvp.shared;
 
-import com.google.gwt.sample.dynatablemvp.server.domain.Address;
+import com.google.web.bindery.requestfactory.shared.EntityProxy;
 import com.google.web.bindery.requestfactory.shared.ProxyFor;
-import com.google.web.bindery.requestfactory.shared.ValueProxy;
+import com.google.gwt.sample.dynatablemvp.server.domain.Address;
+import com.google.gwt.sample.dynatablemvp.server.loc.AddressEntityLocator;
 
 /**
  * Represents an Address in the client code.
  */
-@ProxyFor(Address.class)
-public interface AddressProxy extends ValueProxy {
-  String getCity();
+@ProxyFor(value = Address.class, locator = AddressEntityLocator.class)
+public interface AddressProxy extends EntityProxy {
+	Integer getId();
 
-  String getState();
+	String getCity();
 
-  String getStreet();
+	String getState();
 
-  String getZip();
+	String getStreet();
 
-  String getEmail();
-  
-  void setCity(String city);
+	String getZip();
 
-  void setState(String state);
+	String getEmail();
 
-  void setStreet(String street);
+	Integer getVersion();
 
-  void setZip(String zip);
-  
-  void setEmail(String email);
-  
+	void setId(Integer id);
+
+	void setCity(String city);
+
+	void setState(String state);
+
+	void setStreet(String street);
+
+	void setZip(String zip);
+
+	void setEmail(String email);
+
+	void setVersion(Integer version);
 }
