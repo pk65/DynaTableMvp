@@ -9,7 +9,7 @@
 	<packaging>war</packaging>
 	<name>com.google.gwt.sample.dynatablemvp.DynaTableMvp</name>
 	<properties>
-		<gwtVersion>2.5.1</gwtVersion>
+		<gwtVersion>2.6.0</gwtVersion>
 		<profileWebApp>src/main/webapp</profileWebApp>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
@@ -44,7 +44,7 @@
 	<developers>
 		<developer>
 			<id>pawel</id>
-			<name>Pawe� Kuszy�ski</name>
+			<name>Paweł Kuszyński</name>
 			<email>pawel.kuszynski@gmail.com</email>
 			<organization>Open Source</organization>
 			<roles>
@@ -70,14 +70,14 @@
 		<dependency>
 			<groupId>com.googlecode.gwt-test-utils</groupId>
 			<artifactId>gwt-test-utils</artifactId>
-			<version>0.45</version>
+			<version>0.47</version>
 			<scope>test</scope>
 			<classifier>javadoc</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.gwt-test-utils</groupId>
 			<artifactId>gwt-test-utils</artifactId>
-			<version>0.45</version>
+			<version>0.47</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

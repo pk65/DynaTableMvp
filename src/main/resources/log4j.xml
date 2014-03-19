@@ -16,6 +16,14 @@
          <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
       </layout>
    </appender>
+	<logger name="org.hibernate">
+		<level value="WARN" />
+		<appender-ref ref="fileAppender" />
+	</logger>
+	<logger name="org.springframework">
+		<level value="WARN" />
+		<appender-ref ref="fileAppender" />
+	</logger>
 
    <root>
       <level value="WARN"/>

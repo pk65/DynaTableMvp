@@ -27,6 +27,8 @@ import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory.SchoolCalendarRequest;
 import com.google.gwt.sample.dynatablemvp.shared.PersonProxy;
 import com.google.gwt.sample.dynatablemvp.shared.PersonRelation;
+import com.google.gwt.sample.dynatablemvp.shared.ScheduleProxy;
+import com.google.gwt.sample.dynatablemvp.shared.TimeSlotProxy;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -160,9 +162,11 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 	 */
 	void onSave(ClickEvent event) {
 		final PersonProxy personToSave = personEditor.getValue();
+		final ScheduleProxy classSchedule = personToSave.getClassSchedule();
+		for(@SuppressWarnings("unused") TimeSlotProxy timeSlot : classSchedule.getTimeSlots());
 		personEditor.getContext().persist(personToSave
 				,personToSave.getAddress()
-				,personToSave.getClassSchedule()
+				,classSchedule
 				,personToSave.getMentor())
 		.fire(new Receiver<Integer> () {
 			@Override
