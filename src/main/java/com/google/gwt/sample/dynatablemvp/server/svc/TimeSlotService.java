@@ -18,8 +18,10 @@ public class TimeSlotService {
 	private TimeSlotDao timeSlotDao;
 
 	public Integer persist(TimeSlot timeSlot) {
-		timeSlotDao.insert(timeSlot, timeSlot.getId() != null);
-		return timeSlot.getId();
+		final Integer id = timeSlot.getId();
+		if(id==null)
+			timeSlotDao.insert(timeSlot, false);
+		return id;
 	}
 
 	public List<TimeSlot> fetchAllTimeSlotes() {

@@ -84,7 +84,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.web.bindery</groupId>
@@ -118,7 +118,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${org.slf4j-version}</version>
-			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -734,6 +733,7 @@
 					<systemProperties>
 						<property>
 							<name>gwt.args</name>
+							<value>-war ${project.build.directory}/${project.artifactId}-${project.version}.JUnit</value>
 							<!-- <value>-out target/selenium -runStyle Manual:1</value> -->
 							<!-- <value>-out target/selenium -runStyle Selenium:127.0.0.1:4444/*firefox</value> -->
 							<!-- <value>-out target/selenium -runStyle Selenium:127.0.0.1:4444/*googlechrome</value> -->
@@ -796,29 +796,44 @@
 							<artifactId>maven-project-info-reports-plugin</artifactId>
 							<version>2.7</version>
 						</reportPlugin>
-						<plugin>
+						<reportPlugin>
 							<groupId>org.codehaus.mojo</groupId>
 							<artifactId>findbugs-maven-plugin</artifactId>
 							<version>2.5.2</version>
 							<configuration>
 								<xmlOutput>true</xmlOutput>
 							</configuration>
-						</plugin>
-						<plugin>
+						</reportPlugin>
+						<reportPlugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-pmd-plugin</artifactId>
-							<version>3.0.1</version>
-						</plugin>
-						<plugin>
+							<version>3.1</version>
+						</reportPlugin>
+						<reportPlugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-checkstyle-plugin</artifactId>
 							<version>2.10</version>
-						</plugin>
-						<plugin>
+						</reportPlugin>
+						<reportPlugin>
 							<groupId>org.codehaus.mojo</groupId>
 							<artifactId>cobertura-maven-plugin</artifactId>
 							<version>2.6</version>
-						</plugin>
+							<configuration>
+								<formats>
+									<format>html</format>
+									<format>xml</format>
+								</formats>
+								<check>
+									<branchRate>85</branchRate>
+									<lineRate>85</lineRate>
+									<haltOnFailure>false</haltOnFailure>
+									<totalBranchRate>85</totalBranchRate>
+									<totalLineRate>85</totalLineRate>
+									<packageLineRate>85</packageLineRate>
+									<packageBranchRate>85</packageBranchRate>
+								</check>
+							</configuration>
+						</reportPlugin>
 					</reportPlugins>
 				</configuration>
 			</plugin>
