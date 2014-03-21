@@ -21,7 +21,7 @@
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 		<gwt.logLevel>INFO</gwt.logLevel>
 		<gwt.style>OBFUSCATED</gwt.style>
-		<gwt.extraJvmArgs>-Xmx512M -Xss1024k -javaagent:${project.build.directory}/agents/spring-instrument-${springframework}.jar</gwt.extraJvmArgs>
+		<gwt.extraJvmArgs>-Xmx512M -Xss1024k -javaagent:${project.build.directory}/agents/spring-instrument-${springframework}.jar -Xbootclasspath/a:${project.build.directory}/agents/spring-instrument-${springframework}.jar</gwt.extraJvmArgs>
 	</properties>
 	<scm>
 		<url>https://github.com/pk65/DynaTableMvp</url>
