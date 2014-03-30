@@ -39,7 +39,7 @@ public class ScheduleService {
 			if (timeSlots != null)
 				for (TimeSlot timeSlot : timeSlots)
 					timeSlotService.persist(timeSlot);
-			scheduleDao.insert(schedule, schedule.getKey() != null);
+			scheduleDao.insert(schedule, schedule.getKey() != null,true);
 			return schedule.getKey();
 		}
 		return null;

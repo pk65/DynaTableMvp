@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -25,7 +26,7 @@ public class DataAccessObject<K,E> {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public EntityManager getEntityManager() {
+	protected EntityManager getEntityManager() {
 		return entityManager;
 	}
 
@@ -43,10 +44,6 @@ public class DataAccessObject<K,E> {
 			this.entityClass =null;
 	}
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
     public Class<E> getEntityClass(){
     	return entityClass;
     }
@@ -63,18 +60,37 @@ public class DataAccessObject<K,E> {
 		return newInstance;
     }
     
-    public void insert(E entityObject,boolean merge) {
+    public void insert(E entityObject,boolean merge,boolean flushCache) {
+   		final EntityManagerFactory entityManagerFactory = entityManager.getEntityManagerFactory();
         try {
+        	entityManager.clear();
         	if(merge)
         		entityManager.merge(entityObject);
         	else
         		entityManager.persist(entityObject);
-        	entityManager.flush();
+        	entityManager.close();
         } catch(Exception e){
         	log.error(e.getLocalizedMessage(),e);
+        } finally {
+        	if(flushCache)
+        		entityManagerFactory.getCache().evictAll();        	
         }
     }
  
+    public void delete(K primaryKey) {
+   		final EntityManagerFactory entityManagerFactory = entityManager.getEntityManagerFactory();
+        try {
+        	entityManager.clear();
+			E deleteEntity = findByPrimaryKey(primaryKey);
+       		entityManager.remove(deleteEntity);
+        	entityManager.close();
+        } catch(Exception e){
+        	log.error(e.getLocalizedMessage(),e);
+        } finally {
+			entityManagerFactory.getCache().evictAll();        	
+        }
+    }
+
     public List<E> selectAll() {
         return selectAll(0,0);
     }
@@ -83,13 +99,7 @@ public class DataAccessObject<K,E> {
         CriteriaBuilder cb =entityManager.getCriteriaBuilder();
         CriteriaQuery<E> cq= cb.createQuery(entityClass);
         Root<E> entityRoot = cq.from(entityClass);
-        cq.select(entityRoot);
-        TypedQuery<E> q = entityManager.createQuery(cq);
-        if(startPosition>=0)
-        	q.setFirstResult(startPosition);
-        if(maxResult>0)
-        	q.setMaxResults(maxResult);
-        return q.getResultList();
+        return getResultList(startPosition, maxResult, cq, entityRoot);
     }
     
     public E findByPrimaryKey(K primaryKey){
@@ -104,4 +114,15 @@ public class DataAccessObject<K,E> {
     	return entityManager.createQuery(cq).getSingleResult();
     }
     
+	protected List<E> getResultList(int startPosition, int maxResult,
+			CriteriaQuery<E> cq, Root<E> entityRoot) {
+		cq.select(entityRoot);
+        TypedQuery<E> q = entityManager.createQuery(cq);
+        if(startPosition>=0)
+        	q.setFirstResult(startPosition);
+        if(maxResult>0)
+        	q.setMaxResults(maxResult);
+        return q.getResultList();
+	}
+
 }

@@ -1,7 +1,8 @@
 package com.google.gwt.sample.dynatablemvp.server;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,9 +23,11 @@ import com.google.gwt.sample.dynatablemvp.server.domain.Address;
 import com.google.gwt.sample.dynatablemvp.server.domain.Person;
 import com.google.gwt.sample.dynatablemvp.server.domain.Schedule;
 import com.google.gwt.sample.dynatablemvp.server.domain.TimeSlot;
+import com.google.gwt.sample.dynatablemvp.server.svc.LazyLoader;
 import com.google.gwt.sample.dynatablemvp.server.svc.PersonService;
 import com.google.gwt.sample.dynatablemvp.server.svc.ScheduleService;
 import com.google.gwt.sample.dynatablemvp.server.svc.SchoolCalendarService;
+import com.google.gwt.sample.dynatablemvp.server.svc.TimeSlotService;
 import com.google.gwt.sample.dynatablemvp.shared.PersonRelation;
 import com.google.gwt.sample.dynatablemvp.shared.WeekDayStorage;
 
@@ -33,6 +36,8 @@ public class SchoolCalendarServiceCheck {
 
 	@Autowired
 	private SchoolCalendarService schoolCalendarService;
+	@Autowired
+	private LazyLoader lazyLoader;
 
 	@Before
 	public void setUp() throws Exception {
@@ -52,7 +57,7 @@ public class SchoolCalendarServiceCheck {
 			for (Person p : schoolCalendarService.getAllPeople()) {
 				Person generated = people.get(p.getName());
 				Assert.assertNotNull(generated);
-				schoolCalendarService.loadLazyRelations(Arrays.asList(PersonRelation.ADDRESS
+				lazyLoader.activateRelations(Arrays.asList(PersonRelation.ADDRESS
 						,PersonRelation.SHEDULE), p);
 				Assert.assertEquals(generated.getDescription(),	p.getDescription());
 				final Address address =p.getAddress();
@@ -105,6 +110,9 @@ public class SchoolCalendarServiceCheck {
 	@Autowired
 	private ScheduleService scheduleService;
 	
+	@Autowired
+	private TimeSlotService timeSlotService;
+	
 	@Test
 	public void testUpdatePersonCalendar() {
 		int start=0;
@@ -114,14 +122,54 @@ public class SchoolCalendarServiceCheck {
 		Assert.assertNotNull(people);
 		Assert.assertEquals("People are missing on first page.",pageSize,people.size());
 		Person randomPerson = people.get(new Random().nextInt(pageSize));
-		final int timeSlotsAmount = randomPerson.getClassSchedule().getTimeSlots().size();
 		final Schedule classSchedule = randomPerson.getClassSchedule();
-		final List<TimeSlot> timeSlots = classSchedule.getTimeSlots();
-		final TimeSlot newTimeSlot = scheduleService.createTimeSlot(6, 7*60, 9*60);
+		List<TimeSlot> timeSlots = classSchedule.getTimeSlots();
+		if(timeSlots==null)
+			timeSlots=new ArrayList<TimeSlot>();
+		final int timeSlotsAmount = timeSlots.size();
+		final TimeSlot newTimeSlot = new TimeSlot();
+		newTimeSlot.setDayOfWeek(6);
+		newTimeSlot.setStartMinutes(7*60);
+		newTimeSlot.setEndMinutes(9*60);
+		newTimeSlot.setSchedule(classSchedule);
 		timeSlots.add(newTimeSlot);
 		personService.persist(randomPerson);
+		Person person1 = checkResultOfDelete(randomPerson, timeSlotsAmount+1);
+		final List<TimeSlot> ts = removeTimeSlot(person1, newTimeSlot);
+		person1.getClassSchedule().setTimeSlots(ts);
+		personService.persist(person1);
+		checkResultOfDelete(person1, timeSlotsAmount);
+	}
+
+	private List<TimeSlot>  removeTimeSlot(Person person, final TimeSlot toDeleteTimeSlot) {
+		List<TimeSlot> timeSlots = person.getClassSchedule().getTimeSlots();
+		ArrayList<Integer> forDelete = new ArrayList<Integer>();
+		for(int i=0;i<timeSlots.size();i++){
+			TimeSlot t=timeSlots.get(i) ;
+			if(toDeleteTimeSlot.getDayOfWeek()==t.getDayOfWeek()
+					&& toDeleteTimeSlot.getStartMinutes()==t.getStartMinutes()
+					&& toDeleteTimeSlot.getEndMinutes()==t.getEndMinutes())
+				forDelete.add(Integer.valueOf(i));
+		}
+		for(Integer idx : forDelete){
+			timeSlots.remove(idx.intValue());
+		}
+		return timeSlots;
+	}
+
+	private Person checkResultOfDelete(Person randomPerson, int timeSlotsAmount) {
 		final Person person = schoolCalendarService.findPerson(randomPerson.getId(), Collections.singletonList(PersonRelation.SHEDULE));
-		Assert.assertEquals(timeSlotsAmount+1,person.getClassSchedule().getTimeSlots().size());
+		final Schedule classSchedule = person.getClassSchedule();
+		final List<TimeSlot> timeSlots = classSchedule.getTimeSlots();
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("person["+classSchedule.getPerson().getId()+"]:");
+		for(TimeSlot timeSlot : timeSlots){
+			String msg=" [ "+timeSlot.getId()+", "+timeSlot.getDayOfWeek()+", "+timeSlot.getStartMinutes()+", "+timeSlot.getEndMinutes()+"]";
+			buffer.append(msg);
+		}
+		log.debug("checkResultOfDelete("+timeSlots.size()+"): "+buffer.toString());
+		Assert.assertEquals(timeSlotsAmount,timeSlots.size());
+		return person;
 	}
 	
 }

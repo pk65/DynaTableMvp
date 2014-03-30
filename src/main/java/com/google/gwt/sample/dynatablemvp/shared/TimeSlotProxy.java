@@ -15,9 +15,9 @@
  */
 package com.google.gwt.sample.dynatablemvp.shared;
 
+import com.google.gwt.sample.dynatablemvp.server.domain.TimeSlot;
 import com.google.web.bindery.requestfactory.shared.ProxyFor;
 import com.google.web.bindery.requestfactory.shared.ValueProxy;
-import com.google.gwt.sample.dynatablemvp.server.domain.TimeSlot;
 
 /**
  * TimeSlot DTO.
@@ -27,10 +27,6 @@ public interface TimeSlotProxy extends ValueProxy {
 	Integer getId();
 
 	void setId(Integer id);
-
-//	String getDescription();
-
-//	void setDescription(String description);
 
 	int getDayOfWeek();
 
@@ -43,5 +39,10 @@ public interface TimeSlotProxy extends ValueProxy {
 	void setEndMinutes(int endMinutes);
 
 	void setStartMinutes(int startMinutes);
+	Integer getVersionT();
+	void setVersionT(Integer version);
+	
+	ScheduleProxy getSchedule();
+	public void setSchedule(ScheduleProxy schedule);
 
 }

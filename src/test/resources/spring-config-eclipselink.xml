@@ -64,5 +64,7 @@
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
+	<bean id="lazyLoader" class="com.google.gwt.sample.dynatablemvp.server.vendor.DummyLazyLoader"/>
+
 
 </beans>

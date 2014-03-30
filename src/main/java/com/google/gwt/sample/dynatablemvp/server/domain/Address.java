@@ -20,8 +20,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Version;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -46,15 +47,21 @@ public class Address {
 	@Size(min = 1)
 	private String street;
 
-	@NotNull
-	@DecimalMin("0")
-	private Integer version = 0;
+//	@NotNull
+//	@DecimalMin("0")
+	private Integer versionA;
 
 	@NotNull
 	@Pattern(regexp = "\\d{5}(-\\d{4})?")
 	private String zip;
 
 	private String email;
+
+	private Person person;
+
+	public void setPerson(Person person) {
+		this.person = person;
+	}
 
 	public Address() {
 	}
@@ -64,6 +71,12 @@ public class Address {
 	@Column(unique = true, nullable = false)
 	public Integer getId() {
 		return id;
+	}
+
+	@OneToOne
+    @JoinColumn
+	public Person getPerson(){
+		return this.person;
 	}
 
 	public void setId(Integer id) {
@@ -111,12 +124,12 @@ public class Address {
 	}
 
 	@Version
-	public Integer getVersion() {
-		return version;
+	public Integer getVersionA() {
+		return versionA;
 	}
 
-	public void setVersion(Integer version) {
-		this.version = version;
+	public void setVersionA(Integer version) {
+		this.versionA = version;
 	}
 
 }

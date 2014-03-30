@@ -52,7 +52,7 @@ public interface PersonProxy extends EntityProxy {
 	String getNote();
 
 
-	Integer getVersion();
+	Integer getVersionP();
 
 	Byte getDaysFilter();
 
@@ -78,6 +78,6 @@ public interface PersonProxy extends EntityProxy {
 
 	void setDaysFilter(Byte daysFilter);
 
-	void setVersion(Integer version);
+	void setVersionP(Integer version);
 
 }

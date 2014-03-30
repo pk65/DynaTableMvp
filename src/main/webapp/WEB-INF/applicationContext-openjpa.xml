@@ -44,9 +44,15 @@
 		<property name="jpaProperties"> 
 			<props> 
 			      <prop key="openjpa.jdbc.SynchronizeMappings">buildSchema(ForeignKeys=true)</prop>
-			      <prop key="openjpa.Log">DefaultLevel=WARN, Tool=INFO</prop>
+			      <prop key="openjpa.Log">DefaultLevel=WARN, Tool=INFO, Runtime=INFO, SQL=INFO</prop>
+			      <prop key="openjpa.DynamicEnhancementAgent">true</prop>
+			      <prop key="openjpa.RuntimeUnenhancedClasses">supported</prop>
+			      <prop key="openjpa.ConnectionFactoryProperties">PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000</prop>
 			</props> 
 		</property> 
+		<property name="loadTimeWeaver">
+     		<bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+   		</property>
 	</bean>
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -61,5 +67,5 @@
 	init-method="loadDb">
 		<property name="activated" value="true"/>
 	</bean>
-
+	<bean id="lazyLoader" class="com.google.gwt.sample.dynatablemvp.server.vendor.DummyLazyLoader"/>
 </beans>

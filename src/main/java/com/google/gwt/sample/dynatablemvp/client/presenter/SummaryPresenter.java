@@ -178,7 +178,7 @@ public class SummaryPresenter implements Presenter {
 
 					@Override
 					public void onSuccess(List<PersonProxy> response) {
-//						CHECKDATA(response);
+						CHECKDATA(response);
 						if (lastFetch != start) {
 							return;
 						}

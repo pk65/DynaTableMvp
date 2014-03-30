@@ -28,13 +28,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gwt.sample.dynatablemvp.server.domain.Address;
+import com.google.gwt.sample.dynatablemvp.server.PersonFuzzer;
 import com.google.gwt.sample.dynatablemvp.server.domain.Person;
 import com.google.gwt.sample.dynatablemvp.server.domain.Schedule;
 import com.google.gwt.sample.dynatablemvp.server.domain.TimeSlot;
 import com.google.gwt.sample.dynatablemvp.shared.PersonRelation;
 import com.google.gwt.sample.dynatablemvp.shared.WeekDayStorage;
-import com.google.gwt.sample.dynatablemvp.server.PersonFuzzer;
 
 /**
  * The server side service class.
@@ -53,6 +52,8 @@ public class SchoolCalendarService {
 	private ScheduleService scheduleService; 
 	@Autowired
 	private TimeSlotService timeSlotService;
+	@Autowired
+	private LazyLoader lazyLoader;
 
 	private boolean activated;
 	
@@ -85,45 +86,8 @@ public class SchoolCalendarService {
 	public Person findPerson(Integer id,List<PersonRelation> personRelations) {
 		final Person person = personService.findPerson(id);
 		if(personRelations!=null && personRelations.isEmpty()==false)
-			loadLazyRelations(personRelations, person);	
+			lazyLoader.activateRelations(personRelations, person);	
 		return person;
-	}
-
-	public void loadLazyRelations(List<PersonRelation> personRelations,
-			final Person person) {
-		for(PersonRelation relation : personRelations){
-			switch(relation){
-			case ADDRESS :
-				final Address p_address = person.getAddress();
-				if(p_address!=null && p_address.getId()!=null
-						&& p_address.getClass().getName().equals(Address.class.getName())==false){
-					Address address = addressService.find(p_address.getId());
-					person.setAddress(address);
-				}
-				break;
-			case MENTOR:
-				final Person p_mentor = person.getMentor();
-				if(p_mentor!=null && p_mentor.getId()!=null
-						&& p_mentor.getClass().getName().equals(Person.class.getName())==false){
-					Person mentor=personService.findPerson(p_mentor.getId());
-					person.setMentor(mentor);
-				}
-				break;
-			case SHEDULE:
-				final Schedule classSchedule = person.getClassSchedule();
-				if (classSchedule != null && classSchedule.getKey()!=null 
-						&& classSchedule.getClass().getName() .equals(Schedule.class.getName())==false) {
-					Schedule schedule = scheduleService.find(classSchedule.getKey());
-/*					final List<TimeSlot> timeSlots = schedule.getTimeSlots();
-					if(timeSlots==null)
-						schedule.setTimeSlots(new ArrayList<TimeSlot>());*/
-					person.setClassSchedule(schedule);
-				}
-				break;
-			default:
-				break;
-			}
-		}
 	}
 
 	public List<Person> getAllPeople() {
@@ -137,10 +101,10 @@ public class SchoolCalendarService {
 			final List<Person> allPersons = personService.fetchAllPersons() ;
         	resultList = new ArrayList<Person>();
         	for(Person person : allPersons){
-        		loadLazyRelations(Arrays.asList(PersonRelation.SHEDULE), person);
+        		lazyLoader.activateRelations(Arrays.asList(PersonRelation.SHEDULE), person);
         		final Schedule classSchedule = person.getClassSchedule();
         		if(classSchedule!=null){
-        			final ArrayList<TimeSlot> resultTimes = new ArrayList<TimeSlot>();
+        			final List<TimeSlot> resultTimes = new ArrayList<TimeSlot>();
 					List<TimeSlot> timeSlots = classSchedule.getTimeSlots();
 	        		WeekDayStorage weekDayStorage = new WeekDayStorage();
 	        		for(TimeSlot timeSlot : timeSlots){
@@ -153,7 +117,7 @@ public class SchoolCalendarService {
 	        		if(resultTimes.isEmpty()==false){
 	        			if((startIndex<0?true:index>=startIndex) && (maxCount>0?resultList.size()<maxCount:true)){
 	        				classSchedule.setTimeSlots(resultTimes);
-	        	        	loadLazyRelations(personRelations, person);
+	        				lazyLoader.activateRelations(personRelations, person);
 	        				resultList.add(person);
 	        			}
 						index++;
@@ -165,7 +129,7 @@ public class SchoolCalendarService {
         	resultList = personService.fetchAllPersons(startIndex,maxCount) ;
 			if(personRelations!=null && personRelations.isEmpty()==false)
 				for(Person person : resultList){
-					loadLazyRelations(personRelations, person);
+					lazyLoader.activateRelations(personRelations, person);
 				}
         }
 		return resultList;
@@ -178,27 +142,6 @@ public class SchoolCalendarService {
 		return getPeople(null,new Random().nextInt(countAll.intValue()),
 				1, WeekDayStorage.ALL_DAYS).get(0);
 	}
-
-/*	public Integer persist(Person person){
-		personService.persist(person);		
-		return person.getId();
-	}
-*/
-/*	public Address findPersonAddress(Person p) {
-		final Integer addressId = p.getAddress().getId();
-		return addressService.find(addressId);
-	}
-*/
-/*	public Address findPersonAddress(Integer id) {
-		Address address = addressService.find(id);
-		log.debug("adress id="+id+"; city=\""+address.getCity()+"\"; street=\""+address.getStreet()+"\"; version=\""+address.getVersion()+"\"");
-		return address;
-	}
-*/	
-/*	public Schedule findPersonSchedule(Person p) {
-		final Integer classScheduleId = p.getClassSchedule().getKey();
-		return scheduleService.find(classScheduleId);
-	}*/
 	
 	public boolean isActivated() {
 		return activated;

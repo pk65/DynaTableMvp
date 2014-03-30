@@ -29,14 +29,12 @@
 		<appender-ref ref="fileAppender" />
 	</logger>
 	<logger name="com.google.gwt.sample.dynatablemvp">
-		<level value="INFO" />
-		<appender-ref ref="consoleAppender" />
+		<level value="WARN" />
 		<appender-ref ref="fileAppender" />
 	</logger>
 
 	<root>
 		<level value="WARN" />
-		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="fileAppender" />
 	</root>
 

@@ -15,17 +15,14 @@
  */
 package com.google.gwt.sample.dynatablemvp.server.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Version;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -53,9 +50,9 @@ public class Person {
 	// May be null if the person is newly-created
 	private Integer id;
 
-	@NotNull
-	@DecimalMin("0")
-	private Integer version = 0;
+//	@NotNull
+//	@DecimalMin("0")
+	private Integer versionP;
 
 	private String note;
 
@@ -110,14 +107,12 @@ public class Person {
 	public Person() {
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = true)
+	@OneToOne(mappedBy="person", cascade=CascadeType.ALL)
 	public Address getAddress() {
 		return address;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = true)
+	@OneToOne(mappedBy="person", cascade=CascadeType.ALL)
 	public Schedule getClassSchedule() {
 		return classSchedule;
 	}
@@ -148,8 +143,8 @@ public class Person {
 	 * type, but makes no good use of it. This requirement will be removed soon.
 	 */
 	@Version
-	public Integer getVersion() {
-		return version;
+	public Integer getVersionP() {
+		return versionP;
 	}
 
 	public void setAddress(Address address) {
@@ -180,7 +175,7 @@ public class Person {
 		this.note = note;
 	}
 
-	public void setVersion(Integer version) {
-		this.version = version;
+	public void setVersionP(Integer version) {
+		this.versionP = version;
 	}
 }

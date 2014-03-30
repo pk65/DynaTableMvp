@@ -37,7 +37,7 @@ public interface AddressProxy extends EntityProxy {
 
 	String getEmail();
 
-	Integer getVersion();
+	Integer getVersionA();
 
 	void setId(Integer id);
 
@@ -51,5 +51,5 @@ public interface AddressProxy extends EntityProxy {
 
 	void setEmail(String email);
 
-	void setVersion(Integer version);
+	void setVersionA(Integer version);
 }

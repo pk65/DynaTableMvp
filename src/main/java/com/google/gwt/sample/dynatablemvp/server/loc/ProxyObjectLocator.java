@@ -111,7 +111,7 @@ public class ProxyObjectLocator<E, K, D> extends Locator<E, K> {
 
 	@SuppressWarnings("unchecked")
 	public K persist(E domainObject) {
-		((DataAccessObject<K,E>)objectDao).insert(domainObject,getId(domainObject)!=null);
+		((DataAccessObject<K,E>)objectDao).insert(domainObject,getId(domainObject)!=null,false);
 		return getId(domainObject);
 	}
 

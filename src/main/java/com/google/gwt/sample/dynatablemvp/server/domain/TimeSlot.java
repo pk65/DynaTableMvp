@@ -20,6 +20,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Version;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -38,9 +40,14 @@ public class TimeSlot {
 
 	private int zeroBasedDayOfWeek;
 
-	@NotNull
-	@DecimalMin("0")
-	private int version = 0;
+//	@NotNull
+//	@DecimalMin("0")
+	private Integer versionT;
+	private Schedule schedule;
+
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
 
 	public TimeSlot() {
 	}
@@ -67,6 +74,12 @@ public class TimeSlot {
 		this.zeroBasedDayOfWeek = zeroBasedDayOfWeek;
 	}
 
+	 @ManyToOne
+	 @JoinColumn
+	 public Schedule getSchedule(){
+		return this.schedule;
+	}
+	
 	public int getEndMinutes() {
 		return endMinutes;
 	}
@@ -84,11 +97,11 @@ public class TimeSlot {
 	}
 
 	@Version
-	public int getVersion() {
-		return version;
+	public Integer getVersionT() {
+		return versionT;
 	}
 
-	public void setVersion(int version) {
-		this.version = version;
+	public void setVersionT(Integer version) {
+		this.versionT = version;
 	}
 }

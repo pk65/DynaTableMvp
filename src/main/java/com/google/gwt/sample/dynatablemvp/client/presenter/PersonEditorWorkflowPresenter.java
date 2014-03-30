@@ -93,6 +93,7 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 				new CreatePersonEvent.Handler() {
 					public void startEdit() {
 						personEditor.setValue(null);
+						view.getDialogText().setText("");
 						view.setDialogVisible(true);
 					}
 				});
@@ -149,6 +150,7 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 			@Override
 			public void onSuccess(PersonProxy person) {
 				personEditor.setValue(person);
+				view.getDialogText().setText("");
 				view.setDialogVisible(true);
 				personEditor.focus();				
 			}
@@ -163,7 +165,8 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 	void onSave(ClickEvent event) {
 		final PersonProxy personToSave = personEditor.getValue();
 		final ScheduleProxy classSchedule = personToSave.getClassSchedule();
-		for(@SuppressWarnings("unused") TimeSlotProxy timeSlot : classSchedule.getTimeSlots());
+		for(@SuppressWarnings("unused") TimeSlotProxy timeSlot : classSchedule.getTimeSlots()); // workaround
+		dumpTimeSlots(classSchedule);
 		personEditor.getContext().persist(personToSave
 				,personToSave.getAddress()
 				,classSchedule
@@ -185,6 +188,22 @@ public class PersonEditorWorkflowPresenter implements Presenter {
 				eventBus.fireEvent(new PersonProxyChangeEvent(response,(personToSave.getId()!=null),personToSave.stableId()));
 			}
 		});
+	}
+
+	@SuppressWarnings("unused")
+	private void dumpTimeSlots(final ScheduleProxy classSchedule) {
+		StringBuilder msgBuffer = new StringBuilder();
+		for(TimeSlotProxy timeSlot : classSchedule.getTimeSlots()){
+			if(msgBuffer.length()>0)
+				msgBuffer.append(", ");
+			msgBuffer.append("[");
+			msgBuffer.append(timeSlot.getId());
+			msgBuffer.append("] \"");
+			msgBuffer.append(DiagTools.getDescription(timeSlot.getDayOfWeek(), timeSlot.getStartMinutes(), timeSlot.getEndMinutes()));
+			msgBuffer.append("\"");
+		}
+		
+		logger.fine("schedule={"+classSchedule.getKey()+"}; timeSlots= {"+msgBuffer.toString()+"}");
 	}
 
 }

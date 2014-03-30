@@ -16,7 +16,7 @@
 package com.google.gwt.sample.dynatablemvp.server.domain;
 
 import java.util.List;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,10 +24,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Version;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
 
 /**
  * Holds the relevant data for a Schedule entity. This entity does not follow
@@ -43,11 +42,13 @@ public class Schedule {
 
 	private Integer key;
 
-	@NotNull
-	@DecimalMin("0")
-	private Integer revision = 0;
+//	@NotNull
+//	@DecimalMin("0")
+	private Integer revision;
 
 	private Byte daysFilter;
+
+	private Person person;
 
 	public Schedule() {
 	}
@@ -57,6 +58,16 @@ public class Schedule {
 	@Column(unique = true, nullable = false)
 	public Integer getKey() {
 		return key;
+	}
+
+	@OneToOne
+    @JoinColumn
+	public Person getPerson(){
+		return this.person;
+	}
+	
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	public void setKey(Integer key) {
@@ -72,9 +83,9 @@ public class Schedule {
 		this.revision = revision;
 	}
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinColumn
-	public List<TimeSlot> getTimeSlots() {
+	@OneToMany(mappedBy="schedule", cascade=CascadeType.ALL // { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH }
+		,fetch=FetchType.EAGER, orphanRemoval=true)
+	public List<TimeSlot> getTimeSlots() { /* https://code.google.com/p/google-web-toolkit/issues/detail?id=7025 */
 		return timeSlots;
 	}
 

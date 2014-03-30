@@ -153,7 +153,7 @@ public class FavoritesPresenterTest {
 		}
 
 		@Override
-		public Integer getVersion() {
+		public Integer getVersionP() {
 			return this.version;
 		}
 
@@ -169,7 +169,7 @@ public class FavoritesPresenterTest {
 		}
 
 		@Override
-		public void setVersion(Integer version) {
+		public void setVersionP(Integer version) {
 			this.version=version;
 		}
 

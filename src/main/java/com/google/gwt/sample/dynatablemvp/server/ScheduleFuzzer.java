@@ -18,6 +18,7 @@ package com.google.gwt.sample.dynatablemvp.server;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -42,10 +43,12 @@ public class ScheduleFuzzer {
     int range = MAX_SCHED_ENTRIES - MIN_SCHED_ENTRIES + 1;
     int howMany = MIN_SCHED_ENTRIES + rnd.nextInt(range);
 
-    ArrayList<TimeSlot> timeSlots = generateTimeSlots(rnd, howMany);
+    List<TimeSlot> timeSlots = generateTimeSlots(rnd, howMany);
 
     Schedule sched = new Schedule();
-    sched.setRevision(0);
+//    sched.setRevision(0);
+    for(TimeSlot timeSlot : timeSlots)
+    	timeSlot.setSchedule(sched);
     sched.setTimeSlots(timeSlots);
     return sched;
   }
@@ -60,7 +63,7 @@ public class ScheduleFuzzer {
     return toReturn;
   }
 
-  private static ArrayList<TimeSlot> generateTimeSlots(Random rnd, int howMany) {
+  private static List<TimeSlot> generateTimeSlots(Random rnd, int howMany) {
     TreeSet<TimeSlot> timeSlots = new TreeSet<TimeSlot>(new Comparator<TimeSlot>(){
 		@Override
 		public int compare(TimeSlot o1, TimeSlot o2) {
@@ -90,7 +93,7 @@ public class ScheduleFuzzer {
       timeSlot.setDayOfWeek(dayOfWeek);
       timeSlot.setStartMinutes(absStartMins);
       timeSlot.setEndMinutes(absStopMins);
-      timeSlot.setVersion(0);
+//      timeSlot.setVersion(0);
       timeSlots.add(timeSlot);
     }
     

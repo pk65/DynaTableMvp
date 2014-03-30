@@ -1,7 +1,9 @@
 package com.google.gwt.sample.dynatablemvp.client.presenter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory;

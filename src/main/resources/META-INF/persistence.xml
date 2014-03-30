@@ -5,5 +5,9 @@
              version="2.0">
 
     <persistence-unit name="DefaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
+    	<class>com.google.gwt.sample.dynatablemvp.server.domain.Address</class>
+    	<class>com.google.gwt.sample.dynatablemvp.server.domain.Person</class>
+    	<class>com.google.gwt.sample.dynatablemvp.server.domain.Schedule</class>
+    	<class>com.google.gwt.sample.dynatablemvp.server.domain.TimeSlot</class>
     </persistence-unit>
 </persistence>

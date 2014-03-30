@@ -11,7 +11,7 @@
 </listener>
 <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/applicationContext-hibernate.xml</param-value>
+    <param-value>/WEB-INF/applicationContext-eclipselink.xml</param-value>
 </context-param>
   <servlet>
     <servlet-name>requestFactoryServlet</servlet-name>

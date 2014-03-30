@@ -68,7 +68,8 @@ public class PersonFuzzer {
       Person person = generateRandomPerson(rnd);
       Address address = new Address();
       AddressFuzzer.fuzz(rnd, address);
-      address.setEmail(person.getFirstName()+"."+person.getLastName()+"@"+address.getCity()+".com");
+      address.setPerson(person);
+      address.setEmail(person.getFirstName()+"."+person.getLastName()+"@"+address.getCity().replace(' ', '-')+".com");
       person.setAddress(address);
       toReturn.add(person);
     }
@@ -95,7 +96,9 @@ public class PersonFuzzer {
     String subject = pickRandomString(rnd, SUBJECTS);
     prof.setDescription("Professor of " + subject);
 
-    prof.setClassSchedule(ScheduleFuzzer.generateRandomSchedule(rnd));
+    final Schedule schedule = ScheduleFuzzer.generateRandomSchedule(rnd);
+    schedule.setPerson(prof);
+	prof.setClassSchedule(schedule);
 
     return prof;
   }
@@ -112,8 +115,9 @@ public class PersonFuzzer {
     String subject = pickRandomString(rnd, SUBJECTS);
     student.setDescription("Majoring in " + subject);
 
-    student.setClassSchedule(ScheduleFuzzer.generateRandomSchedule(rnd));
-
+    final Schedule schedule = ScheduleFuzzer.generateRandomSchedule(rnd);
+    schedule.setPerson(student);
+	student.setClassSchedule(schedule);
     return student;
   }
 

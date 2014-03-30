@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory;
-import com.google.gwt.sample.dynatablemvp.shared.TimeSlotProxy;
 import com.google.gwt.sample.dynatablemvp.shared.DynaTableRequestFactory.ScheduleRequest;
+import com.google.gwt.sample.dynatablemvp.shared.TimeSlotProxy;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -173,15 +174,14 @@ public class TimeSlotListPresenter implements Presenter {
 
 	@Override
 	public void go(HasWidgets container) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public static final int ROWS_IN_A_DAY = 9;
 	private static final int FIRST_HOUR = 8;
 
-	public void setValue(List<TimeSlotProxy> value) {
-		backing = value;
+	public void setValue(List<TimeSlotProxy> scheduleTimeSlots) {
+		backing = scheduleTimeSlots;
 		currentSchedule = new HashSet<TimeSlotKey>();
 		existingSlots = new HashMap<TimeSlotKey, TimeSlotProxy>();
 

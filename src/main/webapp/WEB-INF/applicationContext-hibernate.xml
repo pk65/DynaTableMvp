@@ -63,5 +63,5 @@
 	init-method="loadDb">
 		<property name="activated" value="true"/>
 	</bean>
-
+	<bean id="lazyLoader" class="com.google.gwt.sample.dynatablemvp.server.vendor.HibernateLazyLoader"/>
 </beans>

@@ -14,22 +14,15 @@ public class AddressService {
     public AddressService() {
 	}
 
-	private AddressDao addressDao;
- 
-    public AddressDao getAddressDao() {
-        return addressDao;
-    }
     @Autowired
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
- 
+	private AddressDao addressDao;
+  
     public List<Address> fetchAllAddresses() {
-        return getAddressDao().selectAll();
+        return addressDao.selectAll();
     }
     
     public Address find(Integer id){
-    	return getAddressDao().findByPrimaryKey(id);
+    	return addressDao.findByPrimaryKey(id);
     }
     
     public Integer persist(Address address) {
@@ -38,7 +31,7 @@ public class AddressService {
 		if(address!=null){
 			String clazzName = address.getClass().getName();
 			if(clazzName.equals(properName)){
-		   		getAddressDao().insert(address,address.getId()!=null);
+				addressDao.insert(address,address.getId()!=null,false);
 		    	return address.getId();
 			}
 		}

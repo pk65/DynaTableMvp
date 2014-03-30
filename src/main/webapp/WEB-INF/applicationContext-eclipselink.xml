@@ -67,4 +67,5 @@
 		<property name="activated" value="true"/>
 	</bean>
 
+	<bean id="lazyLoader" class="com.google.gwt.sample.dynatablemvp.server.vendor.DummyLazyLoader"/>
 </beans>
