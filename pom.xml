@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<org.slf4j-version>1.6.1</org.slf4j-version>
-		<springframework>6.0.0</springframework>
+		<springframework>[6.0.17,)</springframework>
 		<jpamodelgen-version>4.3.1.Final</jpamodelgen-version>
 		<openjpa.version>2.3.0</openjpa.version>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
